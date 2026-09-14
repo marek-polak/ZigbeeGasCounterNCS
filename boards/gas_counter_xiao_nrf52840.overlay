@@ -3,8 +3,10 @@
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
-/ {
 
+#include <nrf52840_xiao_fota_partitions.dtsi>
+
+/ {
     aliases {
         main-button = &main_button;
         reed-input = &reed_input;
@@ -32,7 +34,7 @@
 
     gpio_outputs {
         compatible = "gpio-leds";
-        
+
         batt_divider_en: batt_divider_en {
             gpios = <&gpio0 29 GPIO_ACTIVE_HIGH>;
             label = "Battery divider enable";
@@ -107,6 +109,6 @@
 };
 
 &gpio0 {
-	latch-detect;
-	sense-edge-mask = <0x0000000c>; /* BIT(2) | BIT(3) */
+    latch-detect;
+    sense-edge-mask = <0x0000000c>; /* BIT(2) | BIT(3) */
 };
