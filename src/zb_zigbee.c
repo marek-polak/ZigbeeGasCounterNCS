@@ -180,7 +180,9 @@ static void report_attr_cb(zb_zcl_addr_t *addr,
 void leave_callback(zb_uint8_t bufid) {
     atomic_set(&_is_leaving_network, false);
     zb_zdo_mgmt_leave_res_t *resp = (zb_zdo_mgmt_leave_res_t *)zb_buf_begin(bufid);
+#ifdef FEATURE_DEEP_SLEEP
     poweroff_mgr_block_clear(POF_BLOCK_LEAVE);
+#endif
     LOG_INF("Leave request status %d", resp->status);
     zb_buf_free(bufid);
 }
@@ -195,11 +197,15 @@ void leave_action(void)
 {
     if (ZB_JOINED()) {
         LOG_INF("Leaving network");
+#ifdef FEATURE_DEEP_SLEEP
         poweroff_mgr_block_set(POF_BLOCK_LEAVE);
+#endif
         atomic_set(&_is_leaving_network, true);
         zb_bufid_t bufid = zb_buf_get_out();
         if (!bufid) {
+#ifdef FEATURE_DEEP_SLEEP
             poweroff_mgr_block_clear(POF_BLOCK_LEAVE);
+#endif
             atomic_set(&_is_leaving_network, false);
             LOG_ERR("No ZBOSS buffer for report");
             return;
@@ -213,7 +219,9 @@ void leave_action(void)
         int seq = zdo_mgmt_leave_req(bufid, leave_callback);
         if (seq == 0xFF) {
             atomic_set(&_is_leaving_network, false);
+#ifdef FEATURE_DEEP_SLEEP
             poweroff_mgr_block_clear(POF_BLOCK_LEAVE);
+#endif
             LOG_ERR("Leave request returned error 0xFF");
         }
     }

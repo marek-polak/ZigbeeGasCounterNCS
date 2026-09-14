@@ -15,7 +15,7 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(zigbee, LOG_LEVEL_INF);
+LOG_MODULE_DECLARE(zigbee, LOG_LEVEL_INF);
 
 #include "zb_features.h"
 #include "zb_zigbee.h"

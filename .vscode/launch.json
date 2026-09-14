@@ -7,6 +7,13 @@
 			"name": "Launch ZigbeeGasCounterNCS/build/ZigbeeGasCounterNCS",
 			"config": "${workspaceFolder}/build/ZigbeeGasCounterNCS",
 			"runToEntryPoint": "main"
+		},
+		{
+			"type": "nrf-connect",
+			"request": "launch",
+			"name": "Launch ZigbeeGasCounterNCS_clean/build/ZigbeeGasCounterNCS_clean",
+			"config": "${workspaceFolder}/build/ZigbeeGasCounterNCS_clean",
+			"runToEntryPoint": "main"
 		}
 	]
 }
