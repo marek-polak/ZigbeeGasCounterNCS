@@ -216,9 +216,9 @@
       /* Main Workspace Layout */
       .workspace {
         display: grid;
-        grid-template-columns: 1fr 340px;
+        grid-template-columns: 1fr 350px;
         gap: 18px;
-        align-items: start;
+        align-items: stretch;
       }
 
       @media (max-width: 1240px) {
@@ -229,12 +229,14 @@
 
       /* Schematic Canvas Card */
       .schematic-card {
-        background: rgba(11, 15, 23, 0.9);
+        background: rgba(11, 15, 23, 0.92);
         border: 1px solid var(--border-strong);
         border-radius: 8px;
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
         overflow: hidden;
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       .card-header {
@@ -276,13 +278,16 @@
       .svg-container {
         width: 100%;
         overflow-x: auto;
-        padding: 8px;
+        padding: 12px 14px;
+        flex: 1;
+        display: flex;
+        align-items: center;
       }
 
       svg#schematic-svg {
         width: 100%;
         height: auto;
-        min-width: 920px;
+        min-width: 960px;
         display: block;
         user-select: none;
       }
@@ -416,14 +421,14 @@
       .net-list {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 7px;
       }
 
       .net-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 7px 10px;
+        padding: 8px 10px;
         background: #090d14;
         border: 1px solid var(--border-subtle);
         border-radius: 5px;
@@ -467,9 +472,10 @@
       .spec-table th,
       .spec-table td {
         text-align: left;
-        padding: 7px 6px;
+        padding: 8px 6px;
         border-bottom: 1px solid var(--border-subtle);
         vertical-align: top;
+        line-height: 1.4;
       }
 
       .spec-table th {
@@ -488,8 +494,8 @@
       }
 
       .warn-banner {
-        margin-top: 10px;
-        padding: 9px 11px;
+        margin-top: 12px;
+        padding: 10px 12px;
         border-radius: 5px;
         background: rgba(255, 77, 77, 0.08);
         border: 1px solid rgba(255, 77, 77, 0.35);
@@ -603,7 +609,7 @@
         <div class="svg-container">
           <svg
             id="schematic-svg"
-            viewBox="0 0 1120 650"
+            viewBox="0 0 1140 820"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
@@ -665,37 +671,37 @@
             <!-- ============================================================ -->
             <!-- TOP 3.3V RAIL & BOTTOM GND RAIL                              -->
             <!-- ============================================================ -->
-            <!-- 3V3 Rail Distribution (from XIAO Pin 12 3V3 around top & to Pico 2) -->
             <g class="net-group" data-net="3v3">
+              <!-- Main 3V3 bus from XIAO Pin 12 (740, 272) up to y=42 and left to SW1 (110, 114) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-3v3)"
                 stroke-width="3.5"
-                d="M 730 250 L 825 250 L 825 46 L 110 46 L 110 95"
+                d="M 740 272 L 835 272 L 835 42 L 110 42 L 110 114"
               />
-              <!-- Branch from Side Header 3V3 (825, 250) to Pico 2 Debug Probe VREF/3V3 (880, 392) -->
+              <!-- Branch from 3V3 bus via dedicated channel x=444 into KY-021 R1 top (255, 352) -->
+              <path
+                class="net-trace"
+                stroke="var(--trace-3v3)"
+                stroke-width="3.2"
+                d="M 444 42 L 444 352 L 255 352 L 255 366"
+              />
+              <!-- Branch from Side Header 3V3 (835, 272) to Pico 2 Debug Probe 3V3 (880, 412) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-3v3)"
                 stroke-width="3"
-                d="M 825 250 L 825 392 L 880 392"
+                d="M 835 272 L 835 412 L 880 412"
               />
-              <!-- Branch to Reed Pull-up R1 -->
-              <path
-                class="net-trace"
-                stroke="var(--trace-3v3)"
-                stroke-width="3.5"
-                d="M 275 46 L 275 235"
-              />
-              <!-- Solder junction dots on 3V3 rail -->
-              <circle cx="275" cy="46" r="5" fill="var(--trace-3v3)" />
-              <circle cx="825" cy="250" r="5" fill="var(--trace-3v3)" />
+
+              <circle cx="444" cy="42" r="5" fill="var(--trace-3v3)" />
+              <circle cx="835" cy="272" r="5" fill="var(--trace-3v3)" />
               <text
-                x="455"
-                y="36"
+                x="462"
+                y="28"
                 fill="var(--trace-3v3)"
                 font-family="JetBrains Mono"
-                font-size="11"
+                font-size="11.5"
                 font-weight="700"
               >
                 +3V3 REGULATED RAIL (FROM XIAO SIDE PIN 12 • MAX 3.3V LOGIC)
@@ -708,91 +714,90 @@
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
-                d="M 730 210 L 855 210 L 855 606 L 205 606 L 205 425"
+                d="M 740 224 L 858 224 L 858 766 L 205 766 L 205 516"
               />
               <!-- Branch to Battery / MOSFET Source GND -->
               <path
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
-                d="M 355 606 L 355 555"
+                d="M 355 766 L 355 696"
               />
               <!-- Branch to Gate Pull-down R5 GND -->
               <path
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
-                d="M 435 606 L 435 555"
+                d="M 418 766 L 418 696"
               />
-              <!-- Branch to 18650 Pack Negative & XIAO BAT- (left rectangular pad at x=586) -->
+              <!-- Branch to 18650 Pack Negative & XIAO BAT- (left rectangular pad at x=596) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
-                d="M 960 606 L 855 606"
+                d="M 960 766 L 858 766"
               />
               <path
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3"
-                d="M 586 472 L 586 606"
+                d="M 596 542 L 596 766"
               />
-              <!-- Branch from Side Header GND (855, 414) to Pico 2 Debug Probe GND -->
+              <!-- Branch from Side Header GND (858, 438) to Pico 2 Debug Probe GND -->
               <path
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3"
-                d="M 880 414 L 855 414"
+                d="M 880 438 L 858 438"
               />
 
               <!-- Junction dots on GND rail -->
-              <circle cx="205" cy="606" r="5" fill="var(--trace-gnd)" />
-              <circle cx="355" cy="606" r="5" fill="var(--trace-gnd)" />
-              <circle cx="435" cy="606" r="5" fill="var(--trace-gnd)" />
-              <circle cx="586" cy="606" r="5" fill="var(--trace-gnd)" />
-              <circle cx="855" cy="606" r="5" fill="var(--trace-gnd)" />
-              <circle cx="855" cy="210" r="5" fill="var(--trace-gnd)" />
-              <circle cx="855" cy="414" r="5" fill="var(--trace-gnd)" />
+              <circle cx="355" cy="766" r="5" fill="var(--trace-gnd)" />
+              <circle cx="418" cy="766" r="5" fill="var(--trace-gnd)" />
+              <circle cx="596" cy="766" r="5" fill="var(--trace-gnd)" />
+              <circle cx="858" cy="766" r="5" fill="var(--trace-gnd)" />
+              <circle cx="858" cy="224" r="5" fill="var(--trace-gnd)" />
+              <circle cx="858" cy="438" r="5" fill="var(--trace-gnd)" />
 
               <!-- GND Symbol at bottom -->
               <line
                 x1="530"
-                y1="606"
+                y1="766"
                 x2="530"
-                y2="620"
+                y2="782"
                 stroke="var(--trace-gnd)"
                 stroke-width="3"
               />
               <line
                 x1="514"
-                y1="620"
+                y1="782"
                 x2="546"
-                y2="620"
+                y2="782"
                 stroke="var(--trace-gnd)"
                 stroke-width="3"
               />
               <line
                 x1="520"
-                y1="627"
+                y1="789"
                 x2="540"
-                y2="627"
+                y2="789"
                 stroke="var(--trace-gnd)"
                 stroke-width="2.5"
               />
               <line
                 x1="526"
-                y1="634"
+                y1="796"
                 x2="534"
-                y2="634"
+                y2="796"
                 stroke="var(--trace-gnd)"
                 stroke-width="2"
               />
               <text
                 x="556"
-                y="628"
+                y="791"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="11"
+                font-size="11.5"
                 font-weight="700"
               >
                 COMMON GND RAIL
@@ -803,35 +808,34 @@
             <!-- 1. MAIN BUTTON CIRCUIT -> XIAO D0 (P0.02)                    -->
             <!-- ============================================================ -->
             <g class="net-group" data-net="btn">
-              <!-- Box Backdrop -->
               <rect
                 x="32"
                 y="64"
-                width="388"
-                height="162"
+                width="396"
+                height="190"
                 rx="8"
-                fill="rgba(18, 25, 38, 0.72)"
+                fill="rgba(18, 25, 38, 0.78)"
                 stroke="#2c3e5a"
                 stroke-dasharray="4 4"
               />
               <text
-                x="46"
-                y="84"
+                x="48"
+                y="90"
                 fill="var(--trace-btn)"
                 font-family="Chakra Petch"
-                font-size="13"
+                font-size="13.5"
                 font-weight="700"
               >
                 1. MAIN BUTTON (2-WIRE • INTERNAL GPIO_PULL_DOWN)
               </text>
 
-              <!-- Trace from Switch (110, 140) to XIAO D0 (470, 170) -->
+              <!-- Trace from Switch bottom (110, 150) to XIAO D0 (480, 176) -->
               <path
                 id="trace-d0"
                 class="net-trace"
                 stroke="var(--trace-btn)"
                 stroke-width="3.5"
-                d="M 110 132 L 110 170 L 470 170"
+                d="M 110 150 L 110 176 L 480 176"
               />
               <path
                 id="flow-d0"
@@ -839,10 +843,10 @@
                 stroke="#fff3c4"
                 stroke-width="2"
                 style="opacity: 0"
-                d="M 110 132 L 110 170 L 470 170"
+                d="M 110 150 L 110 176 L 480 176"
               />
 
-              <!-- Tactile Pushbutton SW1 (between 3V3 at y=95 and D0 trace at y=132) -->
+              <!-- Tactile Pushbutton SW1 (between 3V3 at y=114 and D0 trace at y=150) -->
               <g
                 class="interactive-part"
                 onclick="toggleMainButtonClick()"
@@ -851,23 +855,23 @@
                 <rect
                   class="part-box"
                   x="72"
-                  y="96"
+                  y="108"
                   width="76"
-                  height="44"
+                  height="48"
                   rx="5"
                   fill="#151e2e"
                   stroke="var(--trace-btn)"
                   stroke-width="1.8"
                 />
-                <circle cx="110" cy="104" r="3.5" fill="var(--trace-3v3)" />
-                <circle cx="110" cy="132" r="3.5" fill="var(--trace-btn)" />
+                <circle cx="110" cy="116" r="3.5" fill="var(--trace-3v3)" />
+                <circle cx="110" cy="146" r="3.5" fill="var(--trace-btn)" />
                 <!-- Switch Lever Blade -->
                 <line
                   id="sw-main-blade"
                   x1="110"
-                  y1="132"
+                  y1="146"
                   x2="128"
-                  y2="106"
+                  y2="118"
                   stroke="#ffd175"
                   stroke-width="3"
                   stroke-linecap="round"
@@ -876,70 +880,70 @@
                 <line
                   id="sw-main-plunger"
                   x1="118"
-                  y1="118"
+                  y1="131"
                   x2="138"
-                  y2="118"
+                  y2="131"
                   stroke="#94a6c1"
                   stroke-width="2"
                 />
                 <rect
                   id="sw-main-cap"
                   x="138"
-                  y="110"
+                  y="123"
                   width="6"
                   height="16"
                   rx="2"
                   fill="var(--trace-btn)"
                 />
                 <text
-                  x="158"
-                  y="114"
+                  x="162"
+                  y="128"
                   fill="#e8eef7"
                   font-family="JetBrains Mono"
-                  font-size="11"
+                  font-size="11.5"
                   font-weight="700"
                 >
                   SW1 (MAIN BTN: 3V3 → D0)
                 </text>
                 <text
                   id="sw-main-state-lbl"
-                  x="158"
-                  y="129"
+                  x="162"
+                  y="146"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="10"
+                  font-size="10.5"
                 >
                   OPEN (Idle = 0V via Internal Pull-Down)
                 </text>
               </g>
 
-              <!-- Internal SoC Pull-Down representation near D0 pin -->
+              <!-- Internal SoC Pull-Down badge well below the y=176 D0 trace -->
               <rect
-                x="158"
-                y="180"
-                width="246"
-                height="36"
-                rx="4"
-                fill="rgba(15, 23, 42, 0.85)"
+                x="72"
+                y="194"
+                width="336"
+                height="44"
+                rx="5"
+                fill="rgba(15, 23, 42, 0.9)"
                 stroke="#475569"
                 stroke-dasharray="3 2"
               />
               <text
-                x="168"
-                y="195"
+                x="86"
+                y="213"
                 fill="#fbbf24"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
                 font-weight="700"
               >
                 nRF52840 INTERNAL GPIO_PULL_DOWN (~13 kΩ)
               </text>
               <text
-                x="168"
-                y="209"
+                x="86"
+                y="229"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="10"
               >
                 Enabled in overlay • No external resistor needed!
               </text>
@@ -949,86 +953,105 @@
             <!-- 2. REED SWITCH CIRCUIT -> XIAO D1 (P0.03)                    -->
             <!-- ============================================================ -->
             <g class="net-group" data-net="reed">
-              <!-- Box Backdrop -->
+              <!-- Outer Box Backdrop (y = 276 .. 546, height = 270) -->
               <rect
                 x="32"
-                y="240"
-                width="388"
-                height="190"
+                y="276"
+                width="396"
+                height="270"
                 rx="8"
-                fill="rgba(18, 25, 38, 0.72)"
+                fill="rgba(18, 25, 38, 0.78)"
                 stroke="#1b4d3e"
                 stroke-dasharray="4 4"
               />
               <text
                 id="reed-box-title"
-                x="46"
-                y="262"
+                x="48"
+                y="302"
                 fill="var(--trace-reed)"
                 font-family="Chakra Petch"
-                font-size="13"
+                font-size="13.5"
                 font-weight="700"
               >
                 2. GAS METER REED SENSOR (KY-021 3-PIN MODULE @ 3.3V)
               </text>
 
-              <!-- Pull-up Resistor R1 (10kΩ) from 3V3 (275, 235) to Signal Node (275, 315) -->
-              <line
-                x1="275"
-                y1="235"
-                x2="275"
-                y2="256"
-                stroke="var(--trace-3v3)"
-                stroke-width="3"
+              <!-- KY-021 Module PCB Outline (y = 318 .. 530, well below the green title at y=302) -->
+              <rect
+                id="ky021-outline"
+                x="154"
+                y="318"
+                width="258"
+                height="212"
+                rx="6"
+                fill="rgba(8, 22, 34, 0.45)"
+                stroke="#38bdf8"
+                stroke-width="1.8"
+                stroke-dasharray="6 3"
+                style="opacity: 1"
               />
+              <text
+                id="ky021-badge"
+                x="166"
+                y="338"
+                fill="#38bdf8"
+                font-family="JetBrains Mono"
+                font-size="10.5"
+                font-weight="700"
+                style="opacity: 1"
+              >
+                KY-021 PCB (mid/+ = 3V3, − = GND, S = D1)
+              </text>
+
+              <!-- Pull-up Resistor R1 (10kΩ SMD 103) placed cleanly at y=366..410 -->
               <rect
                 id="r1-body"
-                x="263"
-                y="256"
+                x="243"
+                y="366"
                 width="24"
-                height="42"
+                height="44"
                 rx="3"
                 fill="#182234"
                 stroke="var(--trace-reed)"
                 stroke-width="2"
               />
               <line
-                x1="265"
-                y1="266"
-                x2="285"
-                y2="266"
+                x1="245"
+                y1="376"
+                x2="265"
+                y2="376"
                 stroke="#a16207"
                 stroke-width="2.5"
               />
               <line
-                x1="265"
-                y1="275"
-                x2="285"
-                y2="275"
+                x1="245"
+                y1="386"
+                x2="265"
+                y2="386"
                 stroke="#000000"
                 stroke-width="2.5"
               />
               <line
-                x1="265"
-                y1="284"
-                x2="285"
-                y2="284"
+                x1="245"
+                y1="396"
+                x2="265"
+                y2="396"
                 stroke="#f97316"
                 stroke-width="2.5"
               />
               <line
-                x1="275"
-                y1="298"
-                x2="275"
-                y2="315"
+                x1="255"
+                y1="410"
+                x2="255"
+                y2="426"
                 stroke="var(--trace-reed)"
                 stroke-width="3.5"
               />
 
               <text
                 id="r1-label-1"
-                x="296"
-                y="274"
+                x="278"
+                y="384"
                 fill="#e8eef7"
                 font-family="JetBrains Mono"
                 font-size="11"
@@ -1038,61 +1061,34 @@
               </text>
               <text
                 id="r1-label-2"
-                x="296"
-                y="288"
+                x="278"
+                y="400"
                 fill="#38bdf8"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
               >
                 Onboard KY-021 Module
               </text>
 
-              <!-- Trace from Reed Signal Node (205, 315) -> (275, 315) -> XIAO D1 (470, 210) -->
+              <!-- Trace from Reed Signal Node (205, 426) -> (255, 426) -> (460, 426) -> XIAO D1 (480, 224) -->
               <path
                 id="trace-d1"
                 class="net-trace"
                 stroke="var(--trace-reed)"
                 stroke-width="3.5"
                 filter="url(#glow-reed)"
-                d="M 205 335 L 205 315 L 410 315 L 410 210 L 470 210"
+                d="M 205 442 L 205 426 L 460 426 L 460 224 L 480 224"
               />
               <path
                 id="flow-d1"
                 class="net-flow"
                 stroke="#a7f3d0"
                 stroke-width="2"
-                d="M 275 315 L 410 315 L 410 210 L 470 210"
+                d="M 255 426 L 460 426 L 460 224 L 480 224"
               />
-              <circle cx="275" cy="315" r="5" fill="var(--trace-reed)" />
+              <circle cx="255" cy="426" r="5" fill="var(--trace-reed)" />
 
-              <!-- KY-021 Module PCB Outline (visible by default) -->
-              <rect
-                id="ky021-outline"
-                x="150"
-                y="248"
-                width="255"
-                height="168"
-                rx="6"
-                fill="none"
-                stroke="#38bdf8"
-                stroke-width="1.8"
-                stroke-dasharray="6 3"
-                style="opacity: 1"
-              />
-              <text
-                id="ky021-badge"
-                x="160"
-                y="265"
-                fill="#38bdf8"
-                font-family="JetBrains Mono"
-                font-size="10"
-                font-weight="700"
-                style="opacity: 1"
-              >
-                KY-021 PCB (mid/+ = 3V3, − = GND, S = D1)
-              </text>
-
-              <!-- Glass Reed Switch Capsule (between 205, 335 and GND at 205, 425) -->
+              <!-- Glass Reed Switch Capsule (y = 442 .. 516) -->
               <g
                 class="interactive-part"
                 onclick="toggleReedClick()"
@@ -1102,23 +1098,23 @@
                 <rect
                   class="part-box"
                   x="183"
-                  y="340"
+                  y="442"
                   width="44"
-                  height="72"
+                  height="74"
                   rx="22"
                   fill="rgba(0, 229, 163, 0.08)"
                   stroke="var(--trace-reed)"
                   stroke-width="2"
                 />
-                <circle cx="205" cy="354" r="3.5" fill="var(--trace-reed)" />
-                <circle cx="205" cy="396" r="3.5" fill="var(--trace-gnd)" />
+                <circle cx="205" cy="456" r="3.5" fill="var(--trace-reed)" />
+                <circle cx="205" cy="500" r="3.5" fill="var(--trace-gnd)" />
                 <!-- Reed blades -->
                 <line
                   id="reed-blade-top"
                   x1="205"
-                  y1="354"
+                  y1="456"
                   x2="213"
-                  y2="378"
+                  y2="480"
                   stroke="#5ffad0"
                   stroke-width="2.8"
                   stroke-linecap="round"
@@ -1126,27 +1122,28 @@
                 <line
                   id="reed-blade-bot"
                   x1="205"
-                  y1="396"
+                  y1="500"
                   x2="205"
-                  y2="374"
+                  y2="476"
                   stroke="#94a6c1"
                   stroke-width="2.8"
                   stroke-linecap="round"
                 />
 
-                <!-- Magnet Icon next to Reed Switch -->
-                <g id="magnet-icon" transform="translate(88, 352)">
+                <!-- Magnet Icon on the left (labels stacked cleanly underneath so nothing overlaps) -->
+                <g id="magnet-icon" transform="translate(76, 446)">
                   <path
-                    d="M 0 0 L 26 0 L 26 12 L 12 12 L 12 24 L 26 24 L 26 36 L 0 36 Z"
+                    d="M 0 0 L 28 0 L 28 12 L 12 12 L 12 26 L 28 26 L 28 38 L 0 38 Z"
                     fill="#ef4444"
                     stroke="#fca5a5"
                     stroke-width="1.2"
                   />
-                  <rect x="18" y="0" width="12" height="12" fill="#e2e8f0" />
-                  <rect x="18" y="24" width="12" height="12" fill="#e2e8f0" />
+                  <rect x="19" y="0" width="11" height="12" fill="#e2e8f0" />
+                  <rect x="19" y="26" width="11" height="12" fill="#e2e8f0" />
                   <text
-                    x="-38"
-                    y="15"
+                    x="14"
+                    y="54"
+                    text-anchor="middle"
                     fill="#e8eef7"
                     font-family="JetBrains Mono"
                     font-size="10.5"
@@ -1155,8 +1152,9 @@
                     GAS METER
                   </text>
                   <text
-                    x="-38"
-                    y="28"
+                    x="14"
+                    y="68"
+                    text-anchor="middle"
                     fill="#94a6c1"
                     font-family="JetBrains Mono"
                     font-size="10"
@@ -1166,19 +1164,19 @@
                 </g>
 
                 <text
-                  x="238"
-                  y="358"
+                  x="240"
+                  y="458"
                   fill="#e8eef7"
                   font-family="JetBrains Mono"
-                  font-size="11"
+                  font-size="11.5"
                   font-weight="700"
                 >
                   REED SWITCH
                 </text>
                 <text
                   id="reed-state-lbl"
-                  x="238"
-                  y="373"
+                  x="240"
+                  y="476"
                   fill="var(--trace-reed)"
                   font-family="JetBrains Mono"
                   font-size="10.5"
@@ -1187,20 +1185,20 @@
                   OPEN → D1 = HIGH (1)
                 </text>
                 <text
-                  x="238"
-                  y="389"
+                  x="240"
+                  y="494"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="9.5"
+                  font-size="10"
                 >
                   Close: HIGH→LOW Edge
                 </text>
                 <text
-                  x="238"
-                  y="403"
+                  x="240"
+                  y="511"
                   fill="#34d399"
                   font-family="JetBrains Mono"
-                  font-size="9.5"
+                  font-size="10"
                 >
                   Counts Pulse (+0.01 m³)
                 </text>
@@ -1213,20 +1211,20 @@
             <g class="net-group" data-net="adc">
               <rect
                 x="32"
-                y="444"
-                width="422"
-                height="148"
+                y="568"
+                width="396"
+                height="180"
                 rx="8"
-                fill="rgba(18, 25, 38, 0.72)"
+                fill="rgba(18, 25, 38, 0.78)"
                 stroke="#3b2d54"
                 stroke-dasharray="4 4"
               />
               <text
-                x="46"
-                y="465"
+                x="48"
+                y="594"
                 fill="var(--trace-adc)"
                 font-family="Chakra Petch"
-                font-size="13"
+                font-size="13.5"
                 font-weight="700"
               >
                 3. BATTERY VOLTAGE DIVIDER (D2/AIN4 + D3 FET ENABLE)
@@ -1234,8 +1232,8 @@
 
               <!-- VBAT+ input to R3 (100kΩ) -->
               <text
-                x="52"
-                y="492"
+                x="48"
+                y="628"
                 fill="var(--trace-vbat)"
                 font-family="JetBrains Mono"
                 font-size="11"
@@ -1247,23 +1245,23 @@
                 class="net-trace"
                 stroke="var(--trace-vbat)"
                 stroke-width="3"
-                d="M 162 488 L 195 488"
+                d="M 164 624 L 194 624"
               />
 
               <!-- R3 = 100 kΩ (Top resistor) -->
               <rect
-                x="195"
-                y="476"
-                width="46"
-                height="24"
+                x="194"
+                y="611"
+                width="48"
+                height="26"
                 rx="3"
                 fill="#182234"
                 stroke="var(--trace-vbat)"
                 stroke-width="1.8"
               />
               <text
-                x="201"
-                y="492"
+                x="200"
+                y="628"
                 fill="#e8eef7"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -1272,30 +1270,30 @@
                 100kΩ
               </text>
 
-              <!-- Midpoint Node (262, 488) -> D2 / P0.28 (470, 250) -->
+              <!-- Midpoint Node (262, 624) -> D2 / P0.28 (480, 272) -->
               <path
                 id="trace-d2"
                 class="net-trace"
                 stroke="var(--trace-adc)"
                 stroke-width="3.5"
-                d="M 241 488 L 435 488 L 435 250 L 470 250"
+                d="M 242 624 L 434 624 L 434 272 L 480 272"
               />
-              <circle cx="268" cy="488" r="5" fill="var(--trace-adc)" />
+              <circle cx="264" cy="624" r="5" fill="var(--trace-adc)" />
 
-              <!-- R4 = 380 kΩ (Bottom resistor from 268, 488 to 332, 488) -->
+              <!-- R4 = 380 kΩ (Bottom resistor from 278, 624 to 328, 624) -->
               <rect
-                x="282"
-                y="476"
-                width="48"
-                height="24"
+                x="278"
+                y="611"
+                width="50"
+                height="26"
                 rx="3"
                 fill="#182234"
                 stroke="var(--trace-adc)"
                 stroke-width="1.8"
               />
               <text
-                x="288"
-                y="492"
+                x="285"
+                y="628"
                 fill="#e8eef7"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -1304,37 +1302,37 @@
                 380kΩ
               </text>
               <line
-                x1="330"
-                y1="488"
+                x1="328"
+                y1="624"
                 x2="355"
-                y2="488"
+                y2="624"
                 stroke="var(--trace-adc)"
                 stroke-width="3"
               />
               <line
                 x1="355"
-                y1="488"
+                y1="624"
                 x2="355"
-                y2="512"
+                y2="652"
                 stroke="var(--trace-adc)"
                 stroke-width="3"
               />
 
-              <!-- N-MOSFET Q1 (Drain at 355,512; Source at 355,555 to GND; Gate at 382,532) -->
+              <!-- N-MOSFET Q1 (Drain at 355,652; Source at 355,696 to GND; Gate at 376,674) -->
               <rect
                 id="q1-box"
-                x="336"
-                y="512"
+                x="334"
+                y="652"
                 width="42"
-                height="42"
+                height="44"
                 rx="5"
                 fill="#151e2e"
                 stroke="var(--trace-div-en)"
                 stroke-width="1.8"
               />
               <text
-                x="344"
-                y="537"
+                x="342"
+                y="678"
                 fill="#93e2fe"
                 font-family="JetBrains Mono"
                 font-size="11"
@@ -1343,18 +1341,18 @@
                 FET
               </text>
 
-              <!-- D3 / P0.29 (470, 290) -> Gate of Q1 (378, 532) & Gate Pull-down R5 (100kΩ to GND) -->
+              <!-- D3 / P0.29 (480, 320) -> Gate of Q1 (376, 674) & Gate Pull-down R5 (100kΩ to GND at x=418) -->
               <path
                 id="trace-d3"
                 class="net-trace"
                 stroke="var(--trace-div-en)"
                 stroke-width="3"
-                d="M 470 290 L 452 290 L 452 532 L 378 532"
+                d="M 480 320 L 448 320 L 448 674 L 376 674"
               />
-              <circle cx="435" cy="532" r="4.5" fill="var(--trace-div-en)" />
+              <circle cx="418" cy="674" r="4.5" fill="var(--trace-div-en)" />
               <rect
-                x="425"
-                y="538"
+                x="408"
+                y="679"
                 width="20"
                 height="17"
                 rx="2"
@@ -1363,39 +1361,40 @@
                 stroke-width="1.5"
               />
               <text
-                x="385"
-                y="575"
+                x="334"
+                y="728"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="10"
               >
-                R_gate 100kΩ
+                R_gate = 100 kΩ
               </text>
 
               <text
-                x="52"
-                y="520"
+                x="48"
+                y="666"
                 fill="#d8b4fe"
                 font-family="JetBrains Mono"
                 font-size="10.5"
+                font-weight="600"
               >
                 V_adc = V_bat × 380 / (100 + 380)
               </text>
               <text
-                x="52"
-                y="536"
+                x="48"
+                y="688"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
               >
                 D3 HIGH for 102 ms every 12h or 1× click
               </text>
               <text
-                x="52"
-                y="552"
+                x="48"
+                y="710"
                 fill="#38bdf8"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
               >
                 Zero divider leakage when D3 = LOW
               </text>
@@ -1404,13 +1403,13 @@
             <!-- ============================================================ -->
             <!-- CENTER: SEEED STUDIO XIAO nRF52840 BOARD                     -->
             <!-- ============================================================ -->
-            <g id="xiao-board" transform="translate(470, 82)">
+            <g id="xiao-board" transform="translate(480, 96)">
               <!-- PCB Body -->
               <rect
                 x="0"
                 y="0"
                 width="260"
-                height="414"
+                height="464"
                 rx="16"
                 fill="url(#pcbGrad)"
                 stroke="var(--pcb-border)"
@@ -1420,7 +1419,7 @@
                 x="8"
                 y="8"
                 width="244"
-                height="398"
+                height="448"
                 rx="12"
                 fill="none"
                 stroke="rgba(0, 229, 163, 0.18)"
@@ -1452,27 +1451,27 @@
                 text-anchor="middle"
                 fill="#cbd5e1"
                 font-family="JetBrains Mono"
-                font-size="8.5"
+                font-size="9"
                 font-weight="700"
               >
                 USB-C
               </text>
 
               <!-- 2x2 SWD PADS DIRECTLY UNDER USB-C CONNECTOR (CLK, DIO / GND, RST) -->
-              <g transform="translate(80, 22)">
+              <g transform="translate(76, 24)">
                 <rect
                   x="0"
                   y="0"
-                  width="100"
-                  height="58"
+                  width="108"
+                  height="62"
                   rx="6"
                   fill="#071510"
                   stroke="#1e3f32"
                   stroke-dasharray="3 2"
                 />
-                <!-- Top Row: CLK (left, local x=32 -> global 582, y=36 -> global 118) & DIO (right, local x=68 -> global 618, y=36 -> global 118) -->
+                <!-- Top Row: CLK (left, local x=36 -> global 592, y=38 -> global 134) & DIO (right, local x=72 -> global 628, y=38 -> global 134) -->
                 <circle
-                  cx="32"
+                  cx="36"
                   cy="14"
                   r="6.5"
                   fill="var(--pad-gold)"
@@ -1480,19 +1479,19 @@
                   stroke-width="1.4"
                 />
                 <text
-                  x="32"
-                  y="29"
+                  x="36"
+                  y="30"
                   text-anchor="middle"
                   fill="#38bdf8"
                   font-family="JetBrains Mono"
-                  font-size="8.5"
+                  font-size="9"
                   font-weight="700"
                 >
                   CLK
                 </text>
 
                 <circle
-                  cx="68"
+                  cx="72"
                   cy="14"
                   r="6.5"
                   fill="var(--pad-gold)"
@@ -1500,12 +1499,12 @@
                   stroke-width="1.4"
                 />
                 <text
-                  x="68"
-                  y="29"
+                  x="72"
+                  y="30"
                   text-anchor="middle"
                   fill="#22d3ee"
                   font-family="JetBrains Mono"
-                  font-size="8.5"
+                  font-size="9"
                   font-weight="700"
                 >
                   DIO
@@ -1513,39 +1512,39 @@
 
                 <!-- Bottom Row: GND (left) & RST (right) -->
                 <circle
-                  cx="32"
-                  cy="40"
+                  cx="36"
+                  cy="42"
                   r="6"
                   fill="#9ca3af"
                   stroke="#cbd5e1"
                   stroke-width="1"
                 />
                 <text
-                  x="32"
-                  y="54"
+                  x="36"
+                  y="57"
                   text-anchor="middle"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="8"
+                  font-size="8.5"
                 >
                   GND
                 </text>
 
                 <circle
-                  cx="68"
-                  cy="40"
+                  cx="72"
+                  cy="42"
                   r="6"
                   fill="#9ca3af"
                   stroke="#cbd5e1"
                   stroke-width="1"
                 />
                 <text
-                  x="68"
-                  y="54"
+                  x="72"
+                  y="57"
                   text-anchor="middle"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="8"
+                  font-size="8.5"
                 >
                   RST
                 </text>
@@ -1556,7 +1555,7 @@
                 x="68"
                 y="106"
                 width="124"
-                height="136"
+                height="156"
                 rx="8"
                 fill="url(#mcuGrad)"
                 stroke="#475569"
@@ -1568,48 +1567,48 @@
                 text-anchor="middle"
                 fill="#f8fafc"
                 font-family="JetBrains Mono"
-                font-size="11.5"
+                font-size="12"
                 font-weight="700"
               >
                 nRF52840-QIAA
               </text>
               <text
                 x="130"
-                y="148"
+                y="150"
                 text-anchor="middle"
                 fill="#00e5a3"
                 font-family="JetBrains Mono"
-                font-size="9"
+                font-size="9.5"
               >
                 XIAO nRF52840
               </text>
               <text
                 x="130"
-                y="163"
+                y="168"
                 text-anchor="middle"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9"
+                font-size="9.5"
               >
                 Slot 0: 916 KB
               </text>
               <text
                 x="130"
-                y="176"
+                y="184"
                 text-anchor="middle"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9"
+                font-size="9.5"
               >
                 MCUboot: 64 KB
               </text>
 
               <!-- Onboard P25Q16H QSPI Chip -->
               <rect
-                x="82"
-                y="184"
-                width="96"
-                height="48"
+                x="80"
+                y="198"
+                width="100"
+                height="52"
                 rx="4"
                 fill="#090d14"
                 stroke="#38bdf8"
@@ -1617,7 +1616,7 @@
               />
               <text
                 x="130"
-                y="204"
+                y="218"
                 text-anchor="middle"
                 fill="#38bdf8"
                 font-family="JetBrains Mono"
@@ -1628,7 +1627,7 @@
               </text>
               <text
                 x="130"
-                y="220"
+                y="236"
                 text-anchor="middle"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
@@ -1638,12 +1637,12 @@
               </text>
 
               <!-- Onboard RGB Status LEDs (P0.26 Red, P0.30 Green, P0.06 Blue) -->
-              <g transform="translate(74, 258)">
+              <g transform="translate(74, 282)">
                 <rect
                   x="0"
                   y="0"
                   width="112"
-                  height="32"
+                  height="36"
                   rx="4"
                   fill="#091510"
                   stroke="#1e3a2f"
@@ -1651,7 +1650,7 @@
                 <circle
                   id="xiao-led-r"
                   cx="22"
-                  cy="16"
+                  cy="14"
                   r="5"
                   fill="#451a1a"
                   stroke="#ef4444"
@@ -1659,18 +1658,18 @@
                 />
                 <text
                   x="22"
-                  y="29"
+                  y="30"
                   text-anchor="middle"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="7.5"
+                  font-size="8"
                 >
                   RED
                 </text>
                 <circle
                   id="xiao-led-g"
                   cx="56"
-                  cy="16"
+                  cy="14"
                   r="5"
                   fill="#143824"
                   stroke="#22c55e"
@@ -1678,18 +1677,18 @@
                 />
                 <text
                   x="56"
-                  y="29"
+                  y="30"
                   text-anchor="middle"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="7.5"
+                  font-size="8"
                 >
                   GRN
                 </text>
                 <circle
                   id="xiao-led-b"
                   cx="90"
-                  cy="16"
+                  cy="14"
                   r="5"
                   fill="#1e3a8a"
                   stroke="#3b82f6"
@@ -1697,19 +1696,19 @@
                 />
                 <text
                   x="90"
-                  y="29"
+                  y="30"
                   text-anchor="middle"
                   fill="#94a6c1"
                   font-family="JetBrains Mono"
-                  font-size="7.5"
+                  font-size="8"
                 >
                   BLU
                 </text>
               </g>
 
-              <!-- LEFT HEADER PINS (1..7: D0..D6) -->
-              <!-- Pin 1: D0 / P0.02 (y = 88 -> global y = 170) -->
-              <g transform="translate(0, 88)">
+              <!-- LEFT HEADER PINS (1..7: D0..D6, spaced every 48px) -->
+              <!-- Pin 1: D0 / P0.02 (local y = 80 -> global y = 176) -->
+              <g transform="translate(0, 80)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1742,7 +1741,7 @@
                 </text>
               </g>
 
-              <!-- Pin 2: D1 / P0.03 (y = 128 -> global y = 210) -->
+              <!-- Pin 2: D1 / P0.03 (local y = 128 -> global y = 224) -->
               <g transform="translate(0, 128)">
                 <rect
                   x="-8"
@@ -1776,8 +1775,8 @@
                 </text>
               </g>
 
-              <!-- Pin 3: D2 / P0.28 AIN4 (y = 168 -> global y = 250) -->
-              <g transform="translate(0, 168)">
+              <!-- Pin 3: D2 / P0.28 AIN4 (local y = 176 -> global y = 272) -->
+              <g transform="translate(0, 176)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1810,8 +1809,8 @@
                 </text>
               </g>
 
-              <!-- Pin 4: D3 / P0.29 (y = 208 -> global y = 290) -->
-              <g transform="translate(0, 208)">
+              <!-- Pin 4: D3 / P0.29 (local y = 224 -> global y = 320) -->
+              <g transform="translate(0, 224)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1844,8 +1843,8 @@
                 </text>
               </g>
 
-              <!-- Pin 5: D4 / P0.04 (y = 248 -> global y = 330) -->
-              <g transform="translate(0, 248)">
+              <!-- Pin 5: D4 / P0.04 (local y = 272 -> global y = 368) -->
+              <g transform="translate(0, 272)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1868,8 +1867,8 @@
                 </text>
               </g>
 
-              <!-- Pin 6: D5 / P0.05 (y = 288 -> global y = 370) -->
-              <g transform="translate(0, 288)">
+              <!-- Pin 6: D5 / P0.05 (local y = 320 -> global y = 416) -->
+              <g transform="translate(0, 320)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1892,8 +1891,8 @@
                 </text>
               </g>
 
-              <!-- Pin 7: D6 / P1.11 TX (y = 328 -> global y = 410) -->
-              <g transform="translate(0, 328)">
+              <!-- Pin 7: D6 / P1.11 TX (local y = 368 -> global y = 464) -->
+              <g transform="translate(0, 368)">
                 <rect
                   x="-8"
                   y="-9"
@@ -1926,9 +1925,9 @@
                 </text>
               </g>
 
-              <!-- RIGHT HEADER PINS (14..8: 5V, GND, 3V3, D10..D7) -->
-              <!-- Pin 14: 5V (y = 88 -> global y = 170) -->
-              <g transform="translate(260, 88)">
+              <!-- RIGHT HEADER PINS (14..8: 5V, GND, 3V3, D10..D7, spaced every 48px) -->
+              <!-- Pin 14: 5V (local y = 80 -> global y = 176) -->
+              <g transform="translate(260, 80)">
                 <rect
                   x="-14"
                   y="-9"
@@ -1941,19 +1940,19 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="#f87171"
                   font-family="JetBrains Mono"
-                  font-size="10.5"
+                  font-size="10"
                   font-weight="700"
                 >
                   5V (DO NOT USE)
                 </text>
               </g>
 
-              <!-- Pin 13: GND (y = 128 -> global y = 210) -->
+              <!-- Pin 13: GND (local y = 128 -> global y = 224) -->
               <g transform="translate(260, 128)">
                 <rect
                   x="-14"
@@ -1967,7 +1966,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="#cbd5e1"
@@ -1979,8 +1978,8 @@
                 </text>
               </g>
 
-              <!-- Pin 12: 3V3 (y = 168 -> global y = 250) -->
-              <g transform="translate(260, 168)">
+              <!-- Pin 12: 3V3 (local y = 176 -> global y = 272) -->
+              <g transform="translate(260, 176)">
                 <rect
                   x="-14"
                   y="-9"
@@ -1993,7 +1992,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="var(--trace-3v3)"
@@ -2005,8 +2004,8 @@
                 </text>
               </g>
 
-              <!-- Pin 11: D10 (y = 208 -> global y = 290) -->
-              <g transform="translate(260, 208)">
+              <!-- Pin 11: D10 (local y = 224 -> global y = 320) -->
+              <g transform="translate(260, 224)">
                 <rect
                   x="-14"
                   y="-9"
@@ -2019,7 +2018,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="#64748b"
@@ -2030,8 +2029,8 @@
                 </text>
               </g>
 
-              <!-- Pin 10: D9 (y = 248 -> global y = 330) -->
-              <g transform="translate(260, 248)">
+              <!-- Pin 10: D9 (local y = 272 -> global y = 368) -->
+              <g transform="translate(260, 272)">
                 <rect
                   x="-14"
                   y="-9"
@@ -2044,7 +2043,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="#64748b"
@@ -2055,8 +2054,8 @@
                 </text>
               </g>
 
-              <!-- Pin 9: D8 (y = 288 -> global y = 370) -->
-              <g transform="translate(260, 288)">
+              <!-- Pin 9: D8 (local y = 320 -> global y = 416) -->
+              <g transform="translate(260, 320)">
                 <rect
                   x="-14"
                   y="-9"
@@ -2069,7 +2068,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="#64748b"
@@ -2080,8 +2079,8 @@
                 </text>
               </g>
 
-              <!-- Pin 8: D7 / P1.12 RX (y = 328 -> global y = 410) -->
-              <g transform="translate(260, 328)">
+              <!-- Pin 8: D7 / P1.12 RX (local y = 368 -> global y = 464) -->
+              <g transform="translate(260, 368)">
                 <rect
                   x="-14"
                   y="-9"
@@ -2094,7 +2093,7 @@
                 />
                 <circle cx="-3" cy="0" r="4" fill="#071a13" />
                 <text
-                  x="-22"
+                  x="-20"
                   y="4"
                   text-anchor="end"
                   fill="var(--trace-uart)"
@@ -2107,12 +2106,12 @@
               </g>
 
               <!-- BOTTOM CENTER: BAT (- left, + right) RECTANGULAR PADS -->
-              <g transform="translate(80, 352)">
+              <g transform="translate(80, 398)">
                 <rect
                   x="0"
                   y="0"
                   width="100"
-                  height="50"
+                  height="52"
                   rx="6"
                   fill="#071510"
                   stroke="#1e3f32"
@@ -2120,7 +2119,7 @@
                 />
                 <text
                   x="50"
-                  y="12"
+                  y="13"
                   text-anchor="middle"
                   fill="#cbd5e1"
                   font-family="JetBrains Mono"
@@ -2129,10 +2128,10 @@
                 >
                   BAT PADS
                 </text>
-                <!-- Left Rectangular Pad: BAT - (local x=36 -> global 586, y=378 -> global 460) -->
+                <!-- Left Rectangular Pad: BAT - (local x=36 -> global 596, y=424 -> global 520) -->
                 <rect
                   x="29"
-                  y="16"
+                  y="17"
                   width="14"
                   height="22"
                   rx="2"
@@ -2142,7 +2141,7 @@
                 />
                 <text
                   x="36"
-                  y="47"
+                  y="49"
                   text-anchor="middle"
                   fill="#e8eef7"
                   font-family="JetBrains Mono"
@@ -2151,10 +2150,10 @@
                 >
                   −
                 </text>
-                <!-- Right Rectangular Pad: BAT + (local x=64 -> global 614, y=378 -> global 460) -->
+                <!-- Right Rectangular Pad: BAT + (local x=64 -> global 624, y=424 -> global 520) -->
                 <rect
                   x="57"
-                  y="16"
+                  y="17"
                   width="14"
                   height="22"
                   rx="2"
@@ -2164,7 +2163,7 @@
                 />
                 <text
                   x="64"
-                  y="47"
+                  y="49"
                   text-anchor="middle"
                   fill="var(--trace-vbat)"
                   font-family="JetBrains Mono"
@@ -2182,71 +2181,71 @@
             <g class="net-group" data-net="uart">
               <rect
                 x="880"
-                y="242"
-                width="214"
-                height="196"
+                y="246"
+                width="232"
+                height="218"
                 rx="8"
                 fill="rgba(18, 25, 38, 0.85)"
                 stroke="#5b2849"
                 stroke-width="1.8"
               />
               <text
-                x="894"
-                y="264"
+                x="896"
+                y="272"
                 fill="var(--trace-uart)"
                 font-family="Chakra Petch"
-                font-size="13"
+                font-size="13.5"
                 font-weight="700"
               >
                 4. PICO 2 DEBUG PROBE
               </text>
               <text
-                x="894"
-                y="280"
+                x="896"
+                y="290"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="10"
               >
                 CMSIS-DAP: 67FCFD549A37182F
               </text>
 
-              <!-- SWCLK from top CLK pad under USB-C (582, 118) to Probe SWCLK (880, 304) -->
+              <!-- SWCLK from top CLK pad under USB-C (592, 134) to Probe SWCLK (880, 316) -->
               <path
                 class="net-trace"
                 stroke="#38bdf8"
                 stroke-width="2.6"
                 stroke-dasharray="5 3"
-                d="M 582 118 L 582 68 L 796 68 L 796 304 L 880 304"
+                d="M 592 134 L 592 68 L 796 68 L 796 316 L 880 316"
               />
-              <!-- SWDIO from top DIO pad under USB-C (618, 118) to Probe SWDIO (880, 326) -->
+              <!-- SWDIO from top DIO pad under USB-C (628, 134) to Probe SWDIO (880, 340) -->
               <path
                 class="net-trace"
                 stroke="#22d3ee"
                 stroke-width="2.6"
                 stroke-dasharray="5 3"
-                d="M 618 118 L 618 82 L 778 82 L 778 326 L 880 326"
+                d="M 628 134 L 628 82 L 778 82 L 778 340 L 880 340"
               />
 
-              <!-- UART TX from XIAO D6 (470, 410) routed under XIAO to Probe RX (880, 348) -->
+              <!-- UART TX from XIAO D6 (480, 464) routed under XIAO to Probe RX (880, 364) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-uart)"
                 stroke-width="2.5"
                 stroke-dasharray="6 3"
-                d="M 470 410 L 456 410 L 456 516 L 764 516 L 764 348 L 880 348"
+                d="M 480 464 L 466 464 L 466 584 L 764 584 L 764 364 L 880 364"
               />
-              <!-- UART RX to XIAO D7 (730, 410) from Probe TX (880, 370) -->
+              <!-- UART RX to XIAO D7 (740, 464) from Probe TX (880, 388) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-uart)"
                 stroke-width="2.5"
                 stroke-dasharray="6 3"
-                d="M 730 410 L 808 410 L 808 370 L 880 370"
+                d="M 740 464 L 808 464 L 808 388 L 880 388"
               />
 
               <text
-                x="894"
-                y="308"
+                x="896"
+                y="320"
                 fill="#38bdf8"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2255,8 +2254,8 @@
                 SWCLK ← Top CLK Pad
               </text>
               <text
-                x="894"
-                y="330"
+                x="896"
+                y="344"
                 fill="#22d3ee"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2265,8 +2264,8 @@
                 SWDIO ↔ Top DIO Pad
               </text>
               <text
-                x="894"
-                y="352"
+                x="896"
+                y="368"
                 fill="#f472b6"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2275,8 +2274,8 @@
                 UART RX ← D6 (P1.11)
               </text>
               <text
-                x="894"
-                y="374"
+                x="896"
+                y="392"
                 fill="#f472b6"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2285,8 +2284,8 @@
                 UART TX → D7 (P1.12)
               </text>
               <text
-                x="894"
-                y="396"
+                x="896"
+                y="416"
                 fill="var(--trace-3v3)"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2295,8 +2294,8 @@
                 3V3 ← Side Pin 12 (3V3)
               </text>
               <text
-                x="894"
-                y="418"
+                x="896"
+                y="442"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2312,75 +2311,75 @@
             <g class="net-group" data-net="vbat">
               <rect
                 x="880"
-                y="454"
-                width="214"
-                height="128"
+                y="540"
+                width="232"
+                height="162"
                 rx="8"
                 fill="rgba(18, 25, 38, 0.85)"
                 stroke="#682738"
                 stroke-width="1.8"
               />
               <text
-                x="894"
-                y="476"
+                x="896"
+                y="566"
                 fill="var(--trace-vbat)"
                 font-family="Chakra Petch"
-                font-size="13"
+                font-size="13.5"
                 font-weight="700"
               >
                 5. DUAL 18650 PACK (2P)
               </text>
               <text
-                x="894"
-                y="493"
+                x="896"
+                y="590"
                 fill="#e8eef7"
                 font-family="JetBrains Mono"
-                font-size="10.5"
+                font-size="11"
                 font-weight="600"
               >
                 2 × 3400 mAh = 6800 mAh
               </text>
               <text
-                x="894"
-                y="510"
+                x="896"
+                y="612"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="10"
               >
                 Hot-swappable parallel cells
               </text>
               <text
-                x="894"
-                y="528"
+                x="896"
+                y="636"
                 fill="var(--trace-vbat)"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
               >
                 VBAT+ → XIAO BAT+ &amp; R3
               </text>
               <text
-                x="894"
-                y="544"
+                x="896"
+                y="658"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="10.5"
               >
                 VBAT- → XIAO BAT− &amp; GND
               </text>
 
-              <!-- VBAT+ Trace from 18650 Pack (880, 535) to XIAO BAT+ Right Rectangular Pad (614, 472) -->
+              <!-- VBAT+ Trace from 18650 Pack (880, 632) to XIAO BAT+ Right Rectangular Pad (624, 542) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-vbat)"
                 stroke-width="3"
-                d="M 880 535 L 614 535 L 614 472"
+                d="M 880 632 L 624 632 L 624 542"
               />
-              <!-- Connection from Dual 18650 Negative to GND Rail (960, 582 -> 960, 606) -->
+              <!-- Connection from Dual 18650 Negative to GND Rail (960, 702 -> 960, 766) -->
               <line
                 x1="960"
-                y1="582"
+                y1="702"
                 x2="960"
-                y2="606"
+                y2="766"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
               />
@@ -2653,6 +2652,7 @@
         const kyOutline = document.getElementById("ky021-outline");
         const kyBadge = document.getElementById("ky021-badge");
         const title = document.getElementById("reed-box-title");
+        const r1Label1 = document.getElementById("r1-label-1");
         const r1Label2 = document.getElementById("r1-label-2");
 
         if (mode === "ky021") {
@@ -2660,12 +2660,14 @@
           kyBadge.style.opacity = "1";
           title.textContent =
             "2. GAS METER REED SENSOR (KY-021 3-PIN MODULE @ 3.3V)";
-          r1Label2.textContent = "Onboard KY-021 10kΩ";
+          r1Label1.textContent = "R1 = 10 kΩ (SMD 103)";
+          r1Label2.textContent = "Onboard KY-021 Module";
         } else {
           kyOutline.style.opacity = "0";
           kyBadge.style.opacity = "0";
           title.textContent =
             "2. GAS METER REED SENSOR (BARE REED + 10 kΩ PULL-UP)";
+          r1Label1.textContent = "R1 = 10 kΩ";
           r1Label2.textContent = "External Pull-Up to 3V3";
         }
       }
@@ -2692,8 +2694,8 @@
         if (closed) {
           // Close reed blades & move magnet closer
           bladeTop.setAttribute("x2", "205");
-          bladeTop.setAttribute("y2", "376");
-          magnet.setAttribute("transform", "translate(132, 352)");
+          bladeTop.setAttribute("y2", "478");
+          magnet.setAttribute("transform", "translate(114, 446)");
           lbl.textContent = "CLOSED → D1 = LOW (0V)";
           lbl.setAttribute("fill", "#38bdf8");
           traceD1.setAttribute("stroke", "#38bdf8");
@@ -2717,8 +2719,8 @@
           }
         } else {
           bladeTop.setAttribute("x2", "213");
-          bladeTop.setAttribute("y2", "378");
-          magnet.setAttribute("transform", "translate(88, 352)");
+          bladeTop.setAttribute("y2", "480");
+          magnet.setAttribute("transform", "translate(76, 446)");
           lbl.textContent = "OPEN → D1 = HIGH (1)";
           lbl.setAttribute("fill", "var(--trace-reed)");
           traceD1.setAttribute("stroke", "var(--trace-reed)");
@@ -2753,7 +2755,7 @@
 
         if (pressed) {
           blade.setAttribute("x2", "110");
-          blade.setAttribute("y2", "104");
+          blade.setAttribute("y2", "116");
           lbl.textContent = "CLOSED (Active = 3.3V)";
           lbl.setAttribute("fill", "var(--trace-btn)");
           flowD0.style.opacity = "1";
@@ -2767,9 +2769,8 @@
             "RISING EDGE (LOW → HIGH) on P0.02: Main Button Pressed → Wakes Zigbee for 60s";
         } else {
           blade.setAttribute("x2", "128");
-          blade.setAttribute("y2", "106");
-          lbl.textContent = "OPEN (Idle = 0V)";
-          lbl.textContent = "OPEN (Idle = 0V)";
+          blade.setAttribute("y2", "118");
+          lbl.textContent = "OPEN (Idle = 0V via Internal Pull-Down)";
           lbl.setAttribute("fill", "#94a6c1");
           flowD0.style.opacity = "0";
           traceD0.removeAttribute("filter");
