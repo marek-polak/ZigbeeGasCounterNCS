@@ -53,8 +53,17 @@ static bool adc_started = false;
 static const struct gpio_dt_spec batt_divider_en = GPIO_DT_SPEC_GET(BATT_DIVIDER_EN_NODE, gpios);
 static const struct adc_dt_spec batt_adc = ADC_DT_SPEC_GET(DT_PATH(zephyr_user));
 
+#if DT_NODE_HAS_STATUS(DT_ALIAS(xiao_read_bat_enable), okay)
+/* Seeed XIAO nRF52840 onboard VBAT divider: R_top = 1 MOhm, R_bottom = 510 kOhm */
+#define BATT_DIVIDER_R_TOP_OHM     1000000LL
+#define BATT_DIVIDER_R_BOTTOM_OHM  510000LL
+#define BATT_DIVIDER_HIZ_WHEN_OFF  1
+#else
+/* External divider for DK: R_top = 100 kOhm, R_bottom = 380 kOhm */
 #define BATT_DIVIDER_R_TOP_OHM     100000LL
 #define BATT_DIVIDER_R_BOTTOM_OHM  380000LL
+#define BATT_DIVIDER_HIZ_WHEN_OFF  0
+#endif
 
 /*
  * Tiempo para que el nodo ADC se estabilice tras activar los FET.
@@ -88,7 +97,11 @@ static int adc_enable_init(void)
 		LOG_ERR("Battery divider enable GPIO not ready");
 		return -ENODEV;
 	}
+#if BATT_DIVIDER_HIZ_WHEN_OFF
+	err = gpio_pin_configure_dt(&batt_divider_en, GPIO_INPUT);
+#else
 	err = gpio_pin_configure_dt(&batt_divider_en, GPIO_OUTPUT_INACTIVE);
+#endif
 	if (err) {
 		LOG_ERR("Failed to configure battery divider GPIO: %d", err);
 		return err;
@@ -152,7 +165,11 @@ static int battery_adc_read_mv(int32_t *battery_mv)
 	if (battery_mv == NULL) {
 		return -EINVAL;
 	}
+#if BATT_DIVIDER_HIZ_WHEN_OFF
+	err = gpio_pin_configure_dt(&batt_divider_en, GPIO_OUTPUT_ACTIVE);
+#else
 	err = gpio_pin_set_dt(&batt_divider_en, 1);
+#endif
 	if (err) {
 		LOG_ERR("Failed to enable battery divider: %d", err);
 		return err;
@@ -164,7 +181,11 @@ static int battery_adc_read_mv(int32_t *battery_mv)
 	/*
 	 * Muy importante: apagar el divisor incluso si falla la lectura.
 	 */
+#if BATT_DIVIDER_HIZ_WHEN_OFF
+	int disable_err = gpio_pin_configure_dt(&batt_divider_en, GPIO_INPUT);
+#else
 	int disable_err = gpio_pin_set_dt(&batt_divider_en, 0);
+#endif
 	if (disable_err) {
 		LOG_ERR("Failed to disable battery divider: %d", disable_err);
 		if (!err) {

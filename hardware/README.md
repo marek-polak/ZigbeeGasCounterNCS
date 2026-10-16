@@ -5,7 +5,7 @@ This directory contains the 3D-printable parts used to assemble the gas counter 
 The enclosure is designed to hold:
 
 - The main electronics board (Seeed Studio XIAO nRF52840)
-- Two 18650 batteries connected in parallel
+- Two 18650 batteries connected in parallel (wired directly to the backside `BAT+` and `BAT-` pads on the XIAO, using the board's built-in `P0.14` / `P0.31 AIN7` battery voltage divider)
 - The main push button (wired between `3V3` and `D0 / P0.02`, using the nRF52840 internal `GPIO_PULL_DOWN`)
 - The [KY-021 magnetic reed sensor module](https://www.elecom.sk/magneticky-senzorovy-modul-ky-021/) (with onboard `10 kΩ` resistor, wired to `3V3`, `GND`, and `D1 / P0.03`) used to detect gas meter pulses
 

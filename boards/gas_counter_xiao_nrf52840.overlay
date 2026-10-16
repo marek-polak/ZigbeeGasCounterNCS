@@ -36,13 +36,13 @@
         compatible = "gpio-leds";
 
         batt_divider_en: batt_divider_en {
-            gpios = <&gpio0 29 GPIO_ACTIVE_HIGH>;
-            label = "Battery divider enable";
+            gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+            label = "XIAO onboard battery divider enable";
         };
     };
 
     zephyr,user {
-        io-channels = <&adc 4>; /* P0.28 = AIN4 = XIAO D2/A2 */
+        io-channels = <&adc 7>; /* P0.31 = AIN7 = XIAO onboard VBAT_READ */
     };
 
     // chosen {
@@ -97,12 +97,12 @@
     #address-cells = <1>;
     #size-cells = <0>;
 
-    channel@4 {
-        reg = <4>;
+    channel@7 {
+        reg = <7>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
-        zephyr,input-positive = <NRF_SAADC_AIN4>;
+        zephyr,input-positive = <NRF_SAADC_AIN7>;
         zephyr,resolution = <12>;
         zephyr,oversampling = <4>;
     };

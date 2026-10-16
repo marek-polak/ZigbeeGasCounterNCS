@@ -1224,10 +1224,10 @@
                 y="594"
                 fill="var(--trace-adc)"
                 font-family="Chakra Petch"
-                font-size="13.5"
+                font-size="13"
                 font-weight="700"
               >
-                3. BATTERY VOLTAGE DIVIDER (D2/AIN4 + D3 FET ENABLE)
+                3. BATTERY VOLTAGE DIVIDER (OPTIONAL — INCLUDED ONBOARD XIAO)
               </text>
 
               <!-- VBAT+ input to R3 (100kΩ) -->
@@ -1276,6 +1276,7 @@
                 class="net-trace"
                 stroke="var(--trace-adc)"
                 stroke-width="3.5"
+                stroke-dasharray="5 4"
                 d="M 242 624 L 434 624 L 434 272 L 480 272"
               />
               <circle cx="264" cy="624" r="5" fill="var(--trace-adc)" />
@@ -1347,6 +1348,7 @@
                 class="net-trace"
                 stroke="var(--trace-div-en)"
                 stroke-width="3"
+                stroke-dasharray="5 4"
                 d="M 480 320 L 448 320 L 448 674 L 376 674"
               />
               <circle cx="418" cy="674" r="4.5" fill="var(--trace-div-en)" />
@@ -1373,30 +1375,30 @@
               <text
                 x="48"
                 y="666"
-                fill="#d8b4fe"
+                fill="#34d399"
                 font-family="JetBrains Mono"
                 font-size="10.5"
-                font-weight="600"
+                font-weight="700"
               >
-                V_adc = V_bat × 380 / (100 + 380)
+                NOT NEEDED ON XIAO: Built into BAT+ pad!
               </text>
               <text
                 x="48"
                 y="688"
-                fill="#94a6c1"
+                fill="#d8b4fe"
                 font-family="JetBrains Mono"
-                font-size="10.5"
+                font-size="10"
               >
-                D3 HIGH for 102 ms every 12h or 1× click
+                XIAO uses internal P0.31/AIN7 (1MΩ/510kΩ) + P0.14
               </text>
               <text
                 x="48"
                 y="710"
-                fill="#38bdf8"
+                fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="10.5"
+                font-size="10"
               >
-                Zero divider leakage when D3 = LOW
+                External D2/D3 circuit only used on nRF52840 DK
               </text>
             </g>
 
@@ -2598,11 +2600,16 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>R3 / R4</strong><br />(D2 / D3)</td>
-                <td><strong>100 kΩ</strong> /<br /><strong>380 kΩ</strong></td>
+                <td><strong>Battery Sense</strong><br />(BAT+ / BAT−)</td>
                 <td>
-                  Scales 4.2V battery to 3.32V at D2 (AIN4), switched by D3
-                  (P0.29) FET so divider draws 0 µA in sleep.
+                  <strong>Onboard XIAO</strong><br />1 MΩ / 510 kΩ<br />(P0.31 /
+                  P0.14)
+                </td>
+                <td>
+                  <strong>Included on XIAO PCB!</strong> Wiring battery to
+                  backside <strong>BAT+ / BAT−</strong> uses XIAO's internal
+                  divider (<code>P0.31/AIN7</code> + <code>P0.14</code>).
+                  External D2/D3 circuit is <em>optional</em> (DK only).
                 </td>
               </tr>
             </tbody>
