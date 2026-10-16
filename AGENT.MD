@@ -3,6 +3,7 @@
 ## Purpose and target
 
 - Battery-powered Zigbee gas counter for the Seeed Studio XIAO nRF52840.
+- Fork repository (`origin`): `https://github.com/marek-polak/ZigbeeGasCounterNCS` (upstream base: `https://github.com/IgnacioHR/ZigbeeGasCounterNCS`).
 - The application counts a mechanical meter's reed-switch transitions locally and exposes cumulative gas consumption over Zigbee.
 - The initial image is programmed over SWD. Subsequent firmware can be delivered using Zigbee OTA and MCUboot.
 - Primary deployed target: `gas_counter_xiao_nrf52840/nrf52840`.
