@@ -2,6 +2,32 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "cortex-debug",
+			"request": "launch",
+			"name": "Debug XIAO via Pico pyOCD",
+			"cwd": "${workspaceFolder}",
+			"executable": "${workspaceFolder}/build/ZigbeeGasCounterNCS_clean/zephyr/zephyr.elf",
+			"loadFiles": [
+				"${workspaceFolder}/build/ZigbeeGasCounterNCS_clean/zephyr/zephyr.signed.hex"
+			],
+			"symbolFiles": [
+				"${workspaceFolder}/build/ZigbeeGasCounterNCS_clean/zephyr/zephyr.elf"
+			],
+			"servertype": "pyocd",
+			"serverpath": "/opt/nordic/ncs/toolchains/ccc010f809/bin/pyocd",
+			"gdbPath": "/opt/nordic/ncs/toolchains/ccc010f809/opt/zephyr-sdk/gnu/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+			"targetId": "nrf52840",
+			"serverArgs": [
+				"--uid",
+				"67FCFD549A37182F",
+				"--frequency",
+				"1000000"
+			],
+			"interface": "swd",
+			"runToEntryPoint": "main",
+			"showDevDebugOutput": "raw"
+		},
+		{
 			"type": "nrf-connect",
 			"request": "launch",
 			"name": "Launch ZigbeeGasCounterNCS/build/ZigbeeGasCounterNCS",
