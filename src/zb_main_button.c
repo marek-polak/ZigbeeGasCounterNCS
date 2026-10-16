@@ -106,7 +106,7 @@ int main_button_read_stable_level(void)
  */
 void set_started_from_deep_sleep(bool value)
 {
-	atomic_set(&started_from_deep_sleep, false);
+	atomic_set(&started_from_deep_sleep, value);
 }
 #endif
 
@@ -395,7 +395,7 @@ static void btn_press_thread(void *p1, void *p2, void *p3)
 				int32_t startTime_ms = FIXED_START_TIME_MS; // empirical evaluation needed
 				// substract FIXED_START_TIME_MS ms to timers
 				click_press_time_adjusted_ms = click_press_time_adjusted_ms - startTime_ms; // measured time for the device to start
-				hold_time_adjusted_ms -= hold_time_adjusted_ms - startTime_ms;
+				hold_time_adjusted_ms = hold_time_adjusted_ms - startTime_ms;
 		}
 		#endif
 		err = k_work_reschedule(&work_since_press, K_MSEC(click_press_time_adjusted_ms));

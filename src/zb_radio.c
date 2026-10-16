@@ -306,8 +306,13 @@ zb_ret_t radio_write_attr(zb_uint8_t ep, zb_uint16_t cluster_id, zb_uint16_t att
 		ZB_ZCL_PACKET_PUT_DATA64(ptr, value_ptr);
 		break;
 	default:
+	{
+		struct pending_report_ctx dummy;
 		LOG_ERR("Unsupported attrubute type");
+		(void)pending_report_take(bufid, &dummy);
+		zb_buf_free(bufid);
 		return -EINVAL;
+	}
 	}
 	dst_addr.addr_short = 0x0000;
 	ret =  zb_zcl_finish_and_send_packet(bufid, ptr, &dst_addr, ZB_APS_ADDR_MODE_16_ENDP_PRESENT, 
@@ -472,6 +477,7 @@ static void time_server_start_search_cb(zb_uint8_t param)
         param, cmd_ptr, short_addr, ZB_APS_ADDR_MODE_16_ENDP_PRESENT, dst_endpoint, GAS_METER_ENDPOINT,
          ZB_AF_HA_PROFILE_ID, (ZB_ZCL_CLUSTER_ID_TIME), time_read_attr_send_cb);
   } else if (resp->status == ZB_ZDP_STATUS_TIMEOUT) {
+		zb_buf_free(param);
 		if (num_time_servers_found == 0) {
 #ifdef FEATURE_DEEP_SLEEP
 			poweroff_mgr_zigbee_rx_done();
@@ -480,6 +486,11 @@ static void time_server_start_search_cb(zb_uint8_t param)
 	} else {
 		LOG_ERR("Time server found cb ERROR (err: %d)",resp->status);
     zb_buf_free(param);
+		if (num_time_servers_found == 0) {
+#ifdef FEATURE_DEEP_SLEEP
+			poweroff_mgr_zigbee_rx_done();
+#endif
+		}
   }
 }
 
@@ -501,6 +512,10 @@ static void time_server_start_search(zb_uint8_t param)
   zb_uint8_t seq = zb_zdo_match_desc_req(param, time_server_start_search_cb);
 	if (seq == 0xFF) {
 		LOG_ERR("zb_zdo_match_desc_req returned 0xFF");
+		zb_buf_free(param);
+#ifdef FEATURE_DEEP_SLEEP
+		poweroff_mgr_zigbee_rx_done();
+#endif
 	}
 }
 

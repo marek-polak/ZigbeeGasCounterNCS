@@ -34,7 +34,7 @@ static K_MUTEX_DEFINE(main_loop_mutex);
 
 static uint32_t main_loop_event_mask(void)
 {
-	uint32_t mask = SHALL_ENABLE_ZIGBEE | SHALL_DISABLE_ZIGBEE;
+	uint32_t mask = SHALL_ENABLE_ZIGBEE | SHALL_DISABLE_ZIGBEE | SHALL_CONFIRM_OTA;
 #ifdef FEATURE_MEASURE_BATTERY_LEVEL
 	mask |= SHALL_MEASURE_BATTERY;
 #endif
