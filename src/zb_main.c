@@ -252,15 +252,6 @@ int main(void)
 	reed_led_off();
 #endif
 
-	// if main loop has not started we can safely sleep now
-	if (!is_main_loop_started()) {
-		LOG_INF("Powering off now: direct system_off path");
-		err = poweroff();
-		if (err != 0) {
-			sys_reboot(SYS_REBOOT_COLD);
-		}
-	}
-
 #ifdef FEATURE_DEEP_SLEEP
 	poweroff_mgr_block_clear(POF_BLOCK_APP_NOT_READY);
 	poweroff_mgr_try_poweroff_now();

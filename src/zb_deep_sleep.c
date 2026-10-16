@@ -18,11 +18,14 @@ LOG_MODULE_REGISTER(deep_sleep, LOG_LEVEL_INF);
 
 #include <zephyr/drivers/watchdog.h>
 #include <zephyr/sys/atomic.h>
+#include <zephyr/sys/reboot.h>
 #include <zephyr/init.h>
 
 #include "zb_features.h"
 #include "zb_deep_sleep.h"
 #include "zb_retained.h"
+#include "zb_main.h"
+#include "zb_main_loop.h"
 #include "zb_main_button.h"
 #include "zb_reed.h"
 #include "zb_wakeup_cause.h"
@@ -278,8 +281,17 @@ static void poweroff_mgr_ensure_policy_initialized(void)
 	irq_unlock(key);
 }
 
-static void poweroff(void)
+static void deep_sleep_poweroff(void)
 {
+	if (!is_main_loop_started() && !is_zigbee_started()) {
+		LOG_INF("Powering off now: direct system_off path");
+		int err = poweroff();
+		if (err != 0) {
+			sys_reboot(SYS_REBOOT_COLD);
+		}
+		return;
+	}
+
 	retained_set_boot_to_system_off(1);
 
 	while (log_data_pending()) {
@@ -296,7 +308,7 @@ static void poweroff(void)
 
 static void poweroff_final_forever(void)
 {
-	poweroff();
+	deep_sleep_poweroff();
 	while (true) {
 		k_sleep(K_FOREVER);
 	}
