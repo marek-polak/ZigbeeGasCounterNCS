@@ -142,14 +142,14 @@ For GPIO/Zigbee debugging, the XIAO profile can enable:
 
 - `CONFIG_LOG=y`
 - `CONFIG_LOG_BACKEND_UART=y`
-- `CONFIG_LOG_DEFAULT_LEVEL=4`
+- `CONFIG_LOG_DEFAULT_LEVEL=3`
 - `CONFIG_DEBUG=y`
 - `CONFIG_DEBUG_OPTIMIZATIONS=y`
 - `CONFIG_ASSERT=y`
 - `CONFIG_ASSERT_VERBOSE=y`
 - `CONFIG_DEBUG_THREAD_INFO=y`
 
-Do **not** set `CONFIG_LOG_OVERRIDE_LEVEL=4`: it forces Zephyr's `os` module (`kernel/mutex.c`) to emit `LOG_DBG` on every `k_mutex_lock`/`k_mutex_unlock` inside `zb_sched_loop_iteration()`, saturating `zboss_thread` and overflowing `log_buffer`.
+Do **not** set `CONFIG_LOG_OVERRIDE_LEVEL=4` or `CONFIG_LOG_DEFAULT_LEVEL=4`: either setting causes Zephyr's `os` module (`kernel/mutex.c`) to emit `LOG_DBG` on every `k_mutex_lock`/`k_mutex_unlock` inside `zb_sched_loop_iteration()`, saturating `zboss_thread` and overflowing `log_buffer`. Enable `LOG_LEVEL_DBG` per-module in application files when needed.
 
 UART monitor:
 
