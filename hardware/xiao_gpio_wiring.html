@@ -508,19 +508,24 @@
         <div class="title-group">
           <h1>ZIGBEE GAS COUNTER — GPIO &amp; EXTERNAL CIRCUIT SCHEMATIC</h1>
           <p>
-            Target: gas_counter_xiao_nrf52840/nrf52840 • No Internal Pulls
-            Enabled on D0/D1 • System OFF SENSE + LATCH Wake
+            Target: gas_counter_xiao_nrf52840/nrf52840 • D0 Internal
+            GPIO_PULL_DOWN • D1 KY-021 Reed Module (Onboard 10kΩ) • System OFF
+            SENSE + LATCH Wake
           </p>
         </div>
       </div>
 
       <div class="sim-toolbar">
         <div class="mode-switch" title="Choose Reed Sensor Wiring Topology">
-          <button id="mode-bare" class="selected" onclick="setReedMode('bare')">
-            Bare Reed + 10kΩ
-          </button>
-          <button id="mode-ky021" onclick="setReedMode('ky021')">
+          <button
+            id="mode-ky021"
+            class="selected"
+            onclick="setReedMode('ky021')"
+          >
             KY-021 Module
+          </button>
+          <button id="mode-bare" onclick="setReedMode('bare')">
+            Bare Reed + 10kΩ
           </button>
         </div>
 
@@ -703,14 +708,7 @@
                 class="net-trace"
                 stroke="var(--trace-gnd)"
                 stroke-width="3.5"
-                d="M 730 210 L 855 210 L 855 606 L 110 606 L 110 218"
-              />
-              <!-- Branch to Reed switch GND -->
-              <path
-                class="net-trace"
-                stroke="var(--trace-gnd)"
-                stroke-width="3.5"
-                d="M 205 606 L 205 425"
+                d="M 730 210 L 855 210 L 855 606 L 205 606 L 205 425"
               />
               <!-- Branch to Battery / MOSFET Source GND -->
               <path
@@ -809,7 +807,7 @@
               <rect
                 x="32"
                 y="64"
-                width="320"
+                width="388"
                 height="162"
                 rx="8"
                 fill="rgba(18, 25, 38, 0.72)"
@@ -824,16 +822,16 @@
                 font-size="13"
                 font-weight="700"
               >
-                1. MAIN BUTTON CIRCUIT (ACTIVE HIGH)
+                1. MAIN BUTTON (2-WIRE • INTERNAL GPIO_PULL_DOWN)
               </text>
 
-              <!-- Trace from Switch / Pull-down junction (110, 152) to XIAO D0 (470, 170) -->
+              <!-- Trace from Switch (110, 140) to XIAO D0 (470, 170) -->
               <path
                 id="trace-d0"
                 class="net-trace"
                 stroke="var(--trace-btn)"
                 stroke-width="3.5"
-                d="M 110 152 L 385 152 L 385 170 L 470 170"
+                d="M 110 132 L 110 170 L 470 170"
               />
               <path
                 id="flow-d0"
@@ -841,11 +839,10 @@
                 stroke="#fff3c4"
                 stroke-width="2"
                 style="opacity: 0"
-                d="M 110 152 L 385 152 L 385 170 L 470 170"
+                d="M 110 132 L 110 170 L 470 170"
               />
-              <circle cx="110" cy="152" r="5" fill="var(--trace-btn)" />
 
-              <!-- Tactile Pushbutton SW1 (between 3V3 at y=95 and node at y=152) -->
+              <!-- Tactile Pushbutton SW1 (between 3V3 at y=95 and D0 trace at y=132) -->
               <g
                 class="interactive-part"
                 onclick="toggleMainButtonClick()"
@@ -902,7 +899,7 @@
                   font-size="11"
                   font-weight="700"
                 >
-                  SW1 (MAIN BTN)
+                  SW1 (MAIN BTN: 3V3 → D0)
                 </text>
                 <text
                   id="sw-main-state-lbl"
@@ -912,90 +909,39 @@
                   font-family="JetBrains Mono"
                   font-size="10"
                 >
-                  OPEN (Idle = 0V)
+                  OPEN (Idle = 0V via Internal Pull-Down)
                 </text>
               </g>
 
-              <!-- Pull-down Resistor R2 (10kΩ - 100kΩ) between node (110, 152) and GND (110, 218) -->
-              <line
-                x1="110"
-                y1="152"
-                x2="110"
-                y2="168"
-                stroke="var(--trace-btn)"
-                stroke-width="3"
-              />
+              <!-- Internal SoC Pull-Down representation near D0 pin -->
               <rect
-                x="98"
-                y="168"
-                width="24"
-                height="38"
-                rx="3"
-                fill="#182234"
-                stroke="#94a6c1"
-                stroke-width="2"
+                x="158"
+                y="180"
+                width="246"
+                height="36"
+                rx="4"
+                fill="rgba(15, 23, 42, 0.85)"
+                stroke="#475569"
+                stroke-dasharray="3 2"
               />
-              <!-- Resistor color bands -->
-              <line
-                x1="100"
-                y1="176"
-                x2="120"
-                y2="176"
-                stroke="#a16207"
-                stroke-width="2.5"
-              />
-              <line
-                x1="100"
-                y1="184"
-                x2="120"
-                y2="184"
-                stroke="#000000"
-                stroke-width="2.5"
-              />
-              <line
-                x1="100"
-                y1="192"
-                x2="120"
-                y2="192"
-                stroke="#f97316"
-                stroke-width="2.5"
-              />
-              <line
-                x1="110"
-                y1="206"
-                x2="110"
-                y2="218"
-                stroke="var(--trace-gnd)"
-                stroke-width="3"
-              />
-
               <text
-                x="132"
-                y="184"
-                fill="#e8eef7"
-                font-family="JetBrains Mono"
-                font-size="11"
-                font-weight="700"
-              >
-                R2 = 10 kΩ – 100 kΩ
-              </text>
-              <text
-                x="132"
-                y="198"
-                fill="#94a6c1"
+                x="168"
+                y="195"
+                fill="#fbbf24"
                 font-family="JetBrains Mono"
                 font-size="10"
+                font-weight="700"
               >
-                External Pull-Down (Required!)
+                nRF52840 INTERNAL GPIO_PULL_DOWN (~13 kΩ)
               </text>
               <text
-                x="132"
-                y="212"
-                fill="#fbbf24"
+                x="168"
+                y="209"
+                fill="#94a6c1"
                 font-family="JetBrains Mono"
                 font-size="9.5"
               >
-                Press: HIGH (3.3V) → SENSE_HIGH
+                Enabled in overlay • No external resistor needed!
               </text>
             </g>
 
@@ -1023,7 +969,7 @@
                 font-size="13"
                 font-weight="700"
               >
-                2. GAS METER REED SENSOR (BARE REED + 10 kΩ PULL-UP)
+                2. GAS METER REED SENSOR (KY-021 3-PIN MODULE @ 3.3V)
               </text>
 
               <!-- Pull-up Resistor R1 (10kΩ) from 3V3 (275, 235) to Signal Node (275, 315) -->
@@ -1088,17 +1034,17 @@
                 font-size="11"
                 font-weight="700"
               >
-                R1 = 10 kΩ
+                R1 = 10 kΩ (SMD 103)
               </text>
               <text
                 id="r1-label-2"
                 x="296"
                 y="288"
-                fill="#94a6c1"
+                fill="#38bdf8"
                 font-family="JetBrains Mono"
                 font-size="10"
               >
-                Pull-Up to 3V3
+                Onboard KY-021 Module
               </text>
 
               <!-- Trace from Reed Signal Node (205, 315) -> (275, 315) -> XIAO D1 (470, 210) -->
@@ -1119,7 +1065,7 @@
               />
               <circle cx="275" cy="315" r="5" fill="var(--trace-reed)" />
 
-              <!-- Optional KY-021 Module PCB Outline (hidden by default in bare mode) -->
+              <!-- KY-021 Module PCB Outline (visible by default) -->
               <rect
                 id="ky021-outline"
                 x="150"
@@ -1131,7 +1077,7 @@
                 stroke="#38bdf8"
                 stroke-width="1.8"
                 stroke-dasharray="6 3"
-                style="opacity: 0"
+                style="opacity: 1"
               />
               <text
                 id="ky021-badge"
@@ -1141,9 +1087,9 @@
                 font-family="JetBrains Mono"
                 font-size="10"
                 font-weight="700"
-                style="opacity: 0"
+                style="opacity: 1"
               >
-                KY-021 PCB (VCC=3V3, GND=GND, S=D1)
+                KY-021 PCB (mid/+ = 3V3, − = GND, S = D1)
               </text>
 
               <!-- Glass Reed Switch Capsule (between 205, 335 and GND at 205, 425) -->
@@ -2613,37 +2559,47 @@
 
         <!-- Resistor & Polarity Reference -->
         <div class="side-card">
-          <h2>EXTERNAL RESISTORS &amp; RULES</h2>
+          <h2>RESISTORS &amp; MODULE WIRING</h2>
           <table class="spec-table">
             <thead>
               <tr>
-                <th>Part</th>
-                <th>Value</th>
-                <th>Why It Is Needed</th>
+                <th>Circuit</th>
+                <th>Pull / Value</th>
+                <th>Wiring Notes</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>R1</strong> (D1)</td>
-                <td><strong>10 kΩ</strong><br />to 3V3</td>
+                <td><strong>Main Btn</strong><br />(D0 / P0.02)</td>
                 <td>
-                  Pull-up for bare reed switch. Holds D1 at
-                  <strong>3.3V (1)</strong> when open; reed pulls D1 to
-                  <strong>0V (0)</strong> when magnet passes.
-                  <em>(Included onboard if using KY-021 module.)</em>
+                  <strong>Internal</strong><br /><code>GPIO_PULL_DOWN</code
+                  ><br />(~13 kΩ)
+                </td>
+                <td>
+                  Enabled in devicetree overlay. Wire button directly between
+                  <strong>3V3</strong> and <strong>D0</strong> (no external
+                  resistor needed). Idle = <strong>0V (0)</strong>, Pressed =
+                  <strong>3.3V (1)</strong>.
                 </td>
               </tr>
               <tr>
-                <td><strong>R2</strong> (D0)</td>
-                <td><strong>10–100 kΩ</strong><br />to GND</td>
+                <td><strong>KY-021 Reed</strong><br />(D1 / P0.03)</td>
                 <td>
-                  Pull-down for main button. Holds D0 at
-                  <strong>0V (0)</strong> when idle; button pulls D0 to
-                  <strong>3.3V (1)</strong> when pressed.
+                  <strong>Onboard 10 kΩ</strong><br />(SMD <code>103</code>)
+                </td>
+                <td>
+                  3-pin KY-021 module: <strong>S → D1</strong>,
+                  <strong>middle (+) → 3V3</strong>, <strong>− → GND</strong>.
+                  Open = <strong>3.3V (1)</strong>, Closed =
+                  <strong>0V (0)</strong>.
+                  <em
+                    >(If open reads 0V on your board, swap + and − between 3V3
+                    and GND.)</em
+                  >
                 </td>
               </tr>
               <tr>
-                <td><strong>R3 / R4</strong></td>
+                <td><strong>R3 / R4</strong><br />(D2 / D3)</td>
                 <td><strong>100 kΩ</strong> /<br /><strong>380 kΩ</strong></td>
                 <td>
                   Scales 4.2V battery to 3.32V at D2 (AIN4), switched by D3
@@ -2653,9 +2609,9 @@
             </tbody>
           </table>
           <div class="warn-banner">
-            <strong>CRITICAL:</strong> Neither D0 (`P0.02`) nor D1 (`P0.03`)
-            enables internal nRF52840 pull resistors in devicetree. Never leave
-            D0 or D1 floating, and never connect 5V to any GPIO pin.
+            <strong>CRITICAL:</strong> Always power the KY-021 module from the
+            <strong>3V3</strong> pin (never 5V), and never apply 5V to any
+            nRF52840 GPIO pin.
           </div>
         </div>
       </aside>
@@ -2663,7 +2619,7 @@
 
     <script>
       const state = {
-        reedMode: "bare", // 'bare' | 'ky021'
+        reedMode: "ky021", // 'bare' | 'ky021'
         reedClosed: false,
         mainBtnPressed: false,
         adcActive: false,

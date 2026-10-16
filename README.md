@@ -196,13 +196,26 @@ This reduces the risk of permanently confirming a firmware image that boots but 
 To build the XIAO-based version, you need:
 
 - Seeed Studio XIAO nRF52840.
-- Magnetic reed sensor.
+- [KY-021 magnetic reed sensor module](https://www.elecom.sk/magneticky-senzorovy-modul-ky-021/) (includes onboard 10 kΩ resistor).
 - Two 18650 batteries.
 - Battery contacts or battery holder hardware.
-- Main push button.
+- Main push button (wired between `3V3` and `D0`; uses the nRF52840 internal `GPIO_PULL_DOWN`, so no external button resistor is needed).
 - 3D-printed enclosure.
-- SWD programmer/debugger for the initial firmware flash.
+- SWD programmer/debugger for the initial firmware flash (e.g. Raspberry Pi Pico 2 Debug Probe connected to the backside `CLK`/`DIO` pads under USB-C and side `3V3`/`GND` pins).
 - 18 small magnets 4.75mm x 1.5mm (see the `hardware` folder)
+
+### GPIO & Sensor Wiring Summary
+
+An interactive SVG/Canvas wiring schematic is available in [`hardware/xiao_gpio_wiring.html`](hardware/xiao_gpio_wiring.html).
+
+| Signal                     | XIAO Pin             | nRF52840 Pin       | Wiring & Pull Configuration                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------- | -------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Main Button**            | `D0`                 | `P0.02`            | Connect push button between **`3V3`** and **`D0`**. Internal `GPIO_PULL_DOWN` (`~13 kΩ`) is enabled in `boards/gas_counter_xiao_nrf52840.overlay` (idle = `0 V`, pressed = `3.3 V`).                                                                                                                                                                                       |
+| **Reed Sensor (KY-021)**   | `D1`                 | `P0.03`            | Connect KY-021 **`S`** → **`D1`**, **`+` (middle)** → **`3V3`**, **`-`** → **`GND`** (uses the module's onboard `10 kΩ` resistor; **do not** power from `5V`). Open (magnet away) = `1` (`3.3 V`), closed (magnet present) = `0` (`0 V`, falling edge counts pulse). _Note: if your KY-021 board reads `0` when open, swap its `+` and `-` wires between `3V3` and `GND`._ |
+| **Battery ADC**            | `D2 / A2`            | `P0.28 / AIN4`     | Midpoint of `100 kΩ` (to `VBAT+`) and `380 kΩ` (switched to `GND` via FET).                                                                                                                                                                                                                                                                                                |
+| **Battery Divider Enable** | `D3`                 | `P0.29`            | Drives the battery divider FET gate (`ACTIVE_HIGH`).                                                                                                                                                                                                                                                                                                                       |
+| **Debug UART**             | `D6` / `D7`          | `P1.11` / `P1.12`  | `D6` = UART0 TX, `D7` = UART0 RX (`115200 8N1`).                                                                                                                                                                                                                                                                                                                           |
+| **SWD Debug**              | Backside `CLK`/`DIO` | `SWDCLK` / `SWDIO` | Located on the backside directly under the USB-C connector; pair with side header `3V3` and `GND`.                                                                                                                                                                                                                                                                         |
 
 For development, the Nordic Semiconductor nRF52840 DK can be used instead of the XIAO board.
 

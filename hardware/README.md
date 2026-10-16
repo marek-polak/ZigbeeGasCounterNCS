@@ -4,10 +4,12 @@ This directory contains the 3D-printable parts used to assemble the gas counter 
 
 The enclosure is designed to hold:
 
-- The main electronics board
+- The main electronics board (Seeed Studio XIAO nRF52840)
 - Two 18650 batteries connected in parallel
-- The main push button
-- The reed sensor used to detect gas meter pulses
+- The main push button (wired between `3V3` and `D0 / P0.02`, using the nRF52840 internal `GPIO_PULL_DOWN`)
+- The [KY-021 magnetic reed sensor module](https://www.elecom.sk/magneticky-senzorovy-modul-ky-021/) (with onboard `10 kΩ` resistor, wired to `3V3`, `GND`, and `D1 / P0.03`) used to detect gas meter pulses
+
+See [`xiao_gpio_wiring.html`](xiao_gpio_wiring.html) in this directory for the interactive color-coded SVG schematic and logic analyzer.
 
 The main body has an opening at the top for inserting a 5 mm × 10 mm threaded insert, which is used to attach the enclosure to the gas meter. The triangular-looking part with a cylindrical section in the middle is designed to hold the reed sensor in the correct position.
 

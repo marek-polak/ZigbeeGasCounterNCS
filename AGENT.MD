@@ -118,16 +118,17 @@ The release ZBOSS libraries enable LTO. Source debugging can therefore have inli
 
 ## Hardware pinout
 
-| Function               | XIAO pin | nRF52840 pin | Polarity/use       |
-| ---------------------- | -------- | ------------ | ------------------ |
-| Main button            | D0       | P0.02        | Active high input  |
-| Reed switch            | D1       | P0.03        | Active high input  |
-| Battery ADC            | D2/A2    | P0.28/AIN4   | Analog input       |
-| Battery divider enable | D3       | P0.29        | Active high output |
-| Debug UART TX          | D6       | P1.11        | 115200 baud        |
-| Debug UART RX          | D7       | P1.12        | 115200 baud        |
+| Function               | XIAO pin | nRF52840 pin | Polarity/use                                                                    |
+| ---------------------- | -------- | ------------ | ------------------------------------------------------------------------------- |
+| Main button            | D0       | P0.02        | Active high input (`GPIO_PULL_DOWN` enabled internally; button connects to 3V3) |
+| Reed switch (KY-021)   | D1       | P0.03        | Active high input (no internal pull; KY-021 module has onboard 10 kΩ resistor)  |
+| Battery ADC            | D2/A2    | P0.28/AIN4   | Analog input (`100 kΩ` / `380 kΩ` divider)                                      |
+| Battery divider enable | D3       | P0.29        | Active high output (drives divider FET gate)                                    |
+| Debug UART TX          | D6       | P1.11        | 115200 baud                                                                     |
+| Debug UART RX          | D7       | P1.12        | 115200 baud                                                                     |
 
-The switch and reed input are defined without internal pull resistors. The external circuit must provide deterministic inactive and active levels; do not leave either GPIO floating. Confirm the intended external pull direction before changing polarity or GPIO flags.
+- **Main button (`D0 / P0.02`)**: Uses the nRF52840 internal pull-down resistor (`GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN` in `boards/gas_counter_xiao_nrf52840.overlay`). Wire the momentary push button directly between `3V3` and `D0` (no external resistor required). Idle level is `0` (`LOW`); pressing pulls `D0` to `1` (`HIGH`, `3.3 V`).
+- **Reed sensor (`D1 / P0.03`)**: Uses a 3-pin **KY-021 magnetic reed sensor module** (with onboard `10 kΩ` resistor, e.g. Elecom SKU 25387) powered from `3V3` (`S -> D1`, `middle/+ -> 3V3`, `- -> GND`; never power from `5V`). Idle level (magnet away, reed open) must be `1` (`HIGH`, `3.3 V`) and active level (magnet present, reed closed) must be `0` (`LOW`, `0 V`), triggering `GPIO_INT_EDGE_TO_INACTIVE` (`1 -> 0`). If a KY-021 board has the resistor on the GND side and outputs `0` when open, swap its `+` and `-` leads between `3V3` and `GND` so open = `1` and closed = `0`.
 
 The GPIO overlay applies `latch-detect` and a sense mask for P0.02/P0.03 so the button and reed sensor can wake the device from System OFF.
 
