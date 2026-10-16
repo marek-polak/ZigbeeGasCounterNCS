@@ -63,19 +63,21 @@ Expected artifacts:
 
 The XIAO uses internal nRF52840 flash plus its onboard `p25q16h` QSPI flash:
 
-| Region | Device | Address | Size |
-|---|---|---:|---:|
-| MCUboot | Internal | `0x00000` | 64 KiB |
-| Primary application slot | Internal | `0x10000` | 916 KiB |
-| Settings | Internal | `0xF5000` | 8 KiB |
-| ZBOSS NVRAM | Internal | `0xF7000` | 32 KiB |
-| ZBOSS product config | Internal | `0xFF000` | 4 KiB |
-| Secondary OTA slot | External QSPI | `0x00000` | 916 KiB |
+| Region                   | Device        |   Address |    Size |
+| ------------------------ | ------------- | --------: | ------: |
+| MCUboot                  | Internal      | `0x00000` |  64 KiB |
+| Primary application slot | Internal      | `0x10000` | 916 KiB |
+| Settings                 | Internal      | `0xF5000` |   8 KiB |
+| ZBOSS NVRAM              | Internal      | `0xF7000` |  32 KiB |
+| ZBOSS product config     | Internal      | `0xFF000` |   4 KiB |
+| Secondary OTA slot       | External QSPI | `0x00000` | 916 KiB |
 
 - Shared partition definition: `dts/nrf52840_xiao_fota_partitions.dtsi`.
 - Both the application and MCUboot must use exactly the same partition layout.
 - MCUboot's overlay is `sysbuild/mcuboot/boards/gas_counter_xiao_nrf52840.overlay`.
 - Do not use the nRF5340 partition overlay or the DK's `mx25r64` node; the XIAO flash node is `p25q16h`.
+- Keep `slot1_partition` in external QSPI (`p25q16h`, 916 KiB) rather than upstream's 464 KiB dual-internal-slot layout: Zigbee + FOTA builds (especially with trace/debug symbols at ~581 KiB) exceed 464 KiB.
+- Because `sysbuild/mcuboot/prj.conf` replaces MCUboot's default `prj.conf`, it **must** include `CONFIG_MAIN_STACK_SIZE=10240`. During boot validation, `cc310_sha256_update()` allocates a 4 KiB buffer on `z_main_stack`; if `CONFIG_MAIN_STACK_SIZE` defaults to 1024 bytes, the stack overflows into `.bss`, corrupts `FIH_SUCCESS`, and traps MCUboot in `FIH_PANIC` (`0x428`).
 
 ## SWD flashing and debugging
 
@@ -115,14 +117,14 @@ The release ZBOSS libraries enable LTO. Source debugging can therefore have inli
 
 ## Hardware pinout
 
-| Function | XIAO pin | nRF52840 pin | Polarity/use |
-|---|---|---|---|
-| Main button | D0 | P0.02 | Active high input |
-| Reed switch | D1 | P0.03 | Active high input |
-| Battery ADC | D2/A2 | P0.28/AIN4 | Analog input |
-| Battery divider enable | D3 | P0.29 | Active high output |
-| Debug UART TX | D6 | P1.11 | 115200 baud |
-| Debug UART RX | D7 | P1.12 | 115200 baud |
+| Function               | XIAO pin | nRF52840 pin | Polarity/use       |
+| ---------------------- | -------- | ------------ | ------------------ |
+| Main button            | D0       | P0.02        | Active high input  |
+| Reed switch            | D1       | P0.03        | Active high input  |
+| Battery ADC            | D2/A2    | P0.28/AIN4   | Analog input       |
+| Battery divider enable | D3       | P0.29        | Active high output |
+| Debug UART TX          | D6       | P1.11        | 115200 baud        |
+| Debug UART RX          | D7       | P1.12        | 115200 baud        |
 
 The switch and reed input are defined without internal pull resistors. The external circuit must provide deterministic inactive and active levels; do not leave either GPIO floating. Confirm the intended external pull direction before changing polarity or GPIO flags.
 
@@ -140,12 +142,14 @@ For GPIO/Zigbee debugging, the XIAO profile can enable:
 
 - `CONFIG_LOG=y`
 - `CONFIG_LOG_BACKEND_UART=y`
-- `CONFIG_LOG_OVERRIDE_LEVEL=4`
+- `CONFIG_LOG_DEFAULT_LEVEL=4`
 - `CONFIG_DEBUG=y`
 - `CONFIG_DEBUG_OPTIMIZATIONS=y`
 - `CONFIG_ASSERT=y`
 - `CONFIG_ASSERT_VERBOSE=y`
 - `CONFIG_DEBUG_THREAD_INFO=y`
+
+Do **not** set `CONFIG_LOG_OVERRIDE_LEVEL=4`: it forces Zephyr's `os` module (`kernel/mutex.c`) to emit `LOG_DBG` on every `k_mutex_lock`/`k_mutex_unlock` inside `zb_sched_loop_iteration()`, saturating `zboss_thread` and overflowing `log_buffer`.
 
 UART monitor:
 
@@ -158,10 +162,11 @@ Wire XIAO D6/TX to the debug probe UART RX and connect grounds. Debug logging ma
 ## Source architecture
 
 - `src/zb_main.c`: initialization and top-level startup decisions.
+- `src/zb_main_loop.c`: main event loop (`SHALL_ENABLE_ZIGBEE`, `SHALL_MEASURE_BATTERY`, `SHALL_CONFIRM_OTA`; ensure all handled events are included in `main_loop_event_mask()`).
 - `src/zb_main_button.c`: GPIO interrupt and button gesture state machine.
-- `src/zb_reed.c`: reed GPIO, debounce/stability checks, and pulse handling.
-- `src/zb_zigbee.c`: Zigbee lifecycle, commissioning, callbacks, leave/FOTA behavior.
-- `src/zb_zigbee_ctx.c`: endpoint, cluster, attribute, and reporting context declarations.
+- `src/zb_reed.c`: reed GPIO, debounce/stability checks, and pulse handling (registers GPIO callback before enabling edge interrupt; disables interrupt, removes callback, and persists `next_reed_level` before arming `SYSTEMOFF` wake).
+- `src/zb_zigbee.c`: Zigbee lifecycle, commissioning, callbacks, `ZB_ZCL_SET_ATTR_VALUE_CB_ID` handling, leave/FOTA behavior.
+- `src/zb_zigbee_ctx.c`: endpoint, cluster, attribute, and reporting context declarations. Tracks raw pulse count (`counter_raw`, NVS key `"gm/counter"`) separately from user-configured offset (`curr_summ_delivered_offset`, NVS key `"gm/offset"`), reporting `counter_raw + curr_summ_delivered_offset` as `CurrentSummationDelivered`.
 - `src/zb_radio.c`: radio/report transport behavior.
 - `src/zb_deep_sleep.c`: System OFF policy and poweroff blockers.
 - `src/zb_light_sleep.c`: conventional always-reachable end-device mode.
