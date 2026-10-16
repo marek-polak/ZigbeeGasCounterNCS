@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Seeed XIAO nRF52840 — Zigbee Gas Counter GPIO &amp; Wiring Schematic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void: #070a0f;
+    --bg-panel: #0d121b;
+    --bg-panel-elevated: #121926;
+    --bg-grid-line: rgba(45, 68, 102, 0.16);
+    --bg-grid-major: rgba(66, 102, 153, 0.24);
+    --border-subtle: #1e2a3d;
+    --border-strong: #2d405e;
+    --text-primary: #e8eef7;
+    --text-secondary: #94a6c1;
+    --text-muted: #5d7190;
+
+    /* Trace Colors */
+    --trace-3v3: #ff4d4d;
+    --trace-gnd: #64748b;
+    --trace-reed: #00e5a3;
+    --trace-btn: #ffb020;
+    --trace-adc: #c084fc;
+    --trace-div-en: #38bdf8;
+    --trace-uart: #f472b6;
+    --trace-vbat: #fb7185;
+
+    --pad-gold: #eab308;
+    --pad-gold-stroke: #fef08a;
+    --pcb-green: #0a291e;
+    --pcb-border: #175941;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg-void);
+    background-image:
+      linear-gradient(to right, var(--bg-grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid-line) 1px, transparent 1px),
+      linear-gradient(to right, var(--bg-grid-major) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bg-grid-major) 1px, transparent 1px);
+    background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+    color: var(--text-primary);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 20px 24px 32px;
+    overflow-x: hidden;
+  }
+
+  /* Header Bar */
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    background: linear-gradient(180deg, rgba(18, 25, 38, 0.95), rgba(13, 18, 27, 0.95));
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    margin-bottom: 18px;
+  }
+
+  .brand-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .chip-badge {
+    background: #0b241b;
+    border: 1px solid #00e5a3;
+    color: #00e5a3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    box-shadow: 0 0 14px rgba(0, 229, 163, 0.2);
+  }
+
+  .title-group h1 {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--text-primary);
+  }
+
+  .title-group p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Interactive Controls Toolbar */
+  .sim-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sim-btn {
+    appearance: none;
+    background: var(--bg-panel-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 8px 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.16s ease;
+    user-select: none;
+  }
+
+  .sim-btn:hover {
+    border-color: #4f6d9a;
+    transform: translateY(-1px);
+  }
+
+  .sim-btn:active {
+    transform: translateY(0);
+  }
+
+  .sim-btn.reed-btn {
+    border-color: rgba(0, 229, 163, 0.55);
+    background: rgba(0, 229, 163, 0.09);
+    color: #5ffad0;
+  }
+  .sim-btn.reed-btn.active {
+    background: #00e5a3;
+    color: #041710;
+    box-shadow: 0 0 18px rgba(0, 229, 163, 0.55);
+  }
+
+  .sim-btn.main-btn {
+    border-color: rgba(255, 176, 32, 0.55);
+    background: rgba(255, 176, 32, 0.09);
+    color: #ffd175;
+  }
+  .sim-btn.main-btn.active {
+    background: #ffb020;
+    color: #1f1200;
+    box-shadow: 0 0 18px rgba(255, 176, 32, 0.55);
+  }
+
+  .sim-btn.adc-btn {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.09);
+    color: #93e2fe;
+  }
+  .sim-btn.adc-btn.active {
+    background: #38bdf8;
+    color: #041924;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.55);
+  }
+
+  .mode-switch {
+    display: inline-flex;
+    background: #090d14;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .mode-switch button {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    padding: 8px 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mode-switch button.selected {
+    background: #1e2d45;
+    color: #fff;
+  }
+
+  /* Main Workspace Layout */
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  @media (max-width: 1240px) {
+    .workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Schematic Canvas Card */
+  .schematic-card {
+    background: rgba(11, 15, 23, 0.9);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-subtle);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .status-pills {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: #090d14;
+    border: 1px solid var(--border-subtle);
+    font-size: 11px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .svg-container {
+    width: 100%;
+    overflow-x: auto;
+    padding: 8px;
+  }
+
+  svg#schematic-svg {
+    width: 100%;
+    height: auto;
+    min-width: 920px;
+    display: block;
+    user-select: none;
+  }
+
+  /* SVG Trace Animations & Highlighting */
+  .net-trace {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: opacity 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+  }
+
+  .net-flow {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 6 12;
+    animation: flowDash 1.2s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes flowDash {
+    to {
+      stroke-dashoffset: -36;
+    }
+  }
+
+  .net-dimmed {
+    opacity: 0.16 !important;
+  }
+
+  .net-highlighted {
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+
+  .interactive-part {
+    cursor: pointer;
+  }
+  .interactive-part:hover .part-box {
+    stroke: #ffffff;
+  }
+
+  /* Logic Analyzer Canvas Section */
+  .scope-section {
+    border-top: 1px solid var(--border-strong);
+    background: #080b11;
+    padding: 12px 16px 14px;
+  }
+
+  .scope-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+  }
+
+  canvas#logic-canvas {
+    width: 100%;
+    height: 155px;
+    display: block;
+    background: #05070b;
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+  }
+
+  /* Right Sidebar */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .side-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 15px 16px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  }
+
+  .side-card h2 {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Live Telemetry Readout */
+  .telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .telemetry-box {
+    background: #080c12;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 9px 10px;
+  }
+
+  .telemetry-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .telemetry-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 3px;
+  }
+
+  /* Net Legend List */
+  .net-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .net-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: #090d14;
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.14s ease;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+
+  .net-item:hover, .net-item.active {
+    border-color: #4b6998;
+    background: #121b29;
+  }
+
+  .net-swatch-group {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .net-swatch {
+    width: 18px;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .net-pin-tag {
+    color: var(--text-secondary);
+    font-size: 10.5px;
+  }
+
+  /* Resistor & Component Specs Table */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .spec-table th, .spec-table td {
+    text-align: left;
+    padding: 7px 6px;
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: top;
+  }
+
+  .spec-table th {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .spec-table td {
+    color: var(--text-secondary);
+  }
+
+  .spec-table td strong {
+    color: var(--text-primary);
+  }
+
+  .warn-banner {
+    margin-top: 10px;
+    padding: 9px 11px;
+    border-radius: 5px;
+    background: rgba(255, 77, 77, 0.08);
+    border: 1px solid rgba(255, 77, 77, 0.35);
+    color: #fca5a5;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand-block">
+      <span class="chip-badge">XIAO nRF52840</span>
+      <div class="title-group">
+        <h1>ZIGBEE GAS COUNTER — GPIO &amp; EXTERNAL CIRCUIT SCHEMATIC</h1>
+        <p>Target: gas_counter_xiao_nrf52840/nrf52840 • No Internal Pulls Enabled on D0/D1 • System OFF SENSE + LATCH Wake</p>
+      </div>
+    </div>
+
+    <div class="sim-toolbar">
+      <div class="mode-switch" title="Choose Reed Sensor Wiring Topology">
+        <button id="mode-bare" class="selected" onclick="setReedMode('bare')">Bare Reed + 10kΩ</button>
+        <button id="mode-ky021" onclick="setReedMode('ky021')">KY-021 Module</button>
+      </div>
+
+      <button id="btn-sim-reed" class="sim-btn reed-btn"
+        onmousedown="setReedClosed(true)" onmouseup="setReedClosed(false)" onmouseleave="if(state.reedClosed) setReedClosed(false)"
+        ontouchstart="setReedClosed(true); event.preventDefault();" ontouchend="setReedClosed(false); event.preventDefault();">
+        <span>🧲</span> Hold: Close Reed (D1 → LOW)
+      </button>
+
+      <button id="btn-sim-main" class="sim-btn main-btn"
+        onmousedown="setMainButtonPressed(true)" onmouseup="setMainButtonPressed(false)" onmouseleave="if(state.mainBtnPressed) setMainButtonPressed(false)"
+        ontouchstart="setMainButtonPressed(true); event.preventDefault();" ontouchend="setMainButtonPressed(false); event.preventDefault();">
+        <span>🔘</span> Hold: Press Button (D0 → HIGH)
+      </button>
+
+      <button id="btn-sim-adc" class="sim-btn adc-btn" onclick="triggerAdcSample()">
+        <span>⚡</span> Pulse Battery ADC (D3 → D2)
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+
+    <!-- Left Column: SVG Schematic + Canvas Logic Analyzer -->
+    <section class="schematic-card">
+      <div class="card-header">
+        <span>INTERACTIVE COLOR-CODED TRACE DIAGRAM (CLICK SWITCHES OR HOVER NETS)</span>
+        <div class="status-pills">
+          <span class="status-pill">
+            <span class="dot" id="pill-d1-dot" style="background: var(--trace-reed);"></span>
+            <span id="pill-d1-text">D1 (P0.03): HIGH (3.3V)</span>
+          </span>
+          <span class="status-pill">
+            <span class="dot" id="pill-d0-dot" style="background: var(--trace-gnd);"></span>
+            <span id="pill-d0-text">D0 (P0.02): LOW (0.0V)</span>
+          </span>
+          <span class="status-pill">
+            <span class="dot" id="pill-d3-dot" style="background: var(--trace-gnd);"></span>
+            <span id="pill-d3-text">D3 (P0.29): LOW (OFF)</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="svg-container">
+        <svg id="schematic-svg" viewBox="0 0 1120 650" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow-reed" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#00e5a3" flood-opacity="0.8"/>
+            </filter>
+            <filter id="glow-btn" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#ffb020" flood-opacity="0.8"/>
+            </filter>
+            <filter id="glow-3v3" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ff4d4d" flood-opacity="0.7"/>
+            </filter>
+            <linearGradient id="pcbGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0d2b20"/>
+              <stop offset="100%" stop-color="#071a13"/>
+            </linearGradient>
+            <linearGradient id="mcuGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#1e293b"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+          </defs>
+
+          <!-- ============================================================ -->
+          <!-- TOP 3.3V RAIL & BOTTOM GND RAIL                              -->
+          <!-- ============================================================ -->
+          <!-- 3V3 Rail Distribution (from XIAO Pin 12 3V3 around top) -->
+          <g class="net-group" data-net="3v3">
+            <path class="net-trace" stroke="var(--trace-3v3)" stroke-width="3.5"
+              d="M 730 250 L 825 250 L 825 46 L 110 46 L 110 95" />
+            <!-- Branch to Reed Pull-up R1 -->
+            <path class="net-trace" stroke="var(--trace-3v3)" stroke-width="3.5"
+              d="M 275 46 L 275 235" />
+            <!-- Solder junction dots on 3V3 rail -->
+            <circle cx="275" cy="46" r="5" fill="var(--trace-3v3)" />
+            <text x="455" y="36" fill="var(--trace-3v3)" font-family="JetBrains Mono" font-size="11" font-weight="700">
+              +3V3 REGULATED RAIL (FROM XIAO PIN 12 • MAX 3.3V LOGIC)
+            </text>
+          </g>
+
+          <!-- GND Rail Distribution (from XIAO Pin 13 GND around bottom) -->
+          <g class="net-group" data-net="gnd">
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3.5"
+              d="M 730 210 L 855 210 L 855 606 L 110 606 L 110 218" />
+            <!-- Branch to Reed switch GND -->
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3.5"
+              d="M 205 606 L 205 425" />
+            <!-- Branch to Battery / MOSFET Source GND -->
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3.5"
+              d="M 355 606 L 355 555" />
+            <!-- Branch to Gate Pull-down R5 GND -->
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3.5"
+              d="M 435 606 L 435 555" />
+            <!-- Branch to 18650 Pack Negative & XIAO BAT- -->
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3.5"
+              d="M 960 606 L 855 606" />
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3"
+              d="M 625 495 L 625 606" />
+            <!-- Branch to Pico 2 Debug Probe GND -->
+            <path class="net-trace" stroke="var(--trace-gnd)" stroke-width="3"
+              d="M 960 390 L 855 390" />
+
+            <!-- Junction dots on GND rail -->
+            <circle cx="205" cy="606" r="5" fill="var(--trace-gnd)" />
+            <circle cx="355" cy="606" r="5" fill="var(--trace-gnd)" />
+            <circle cx="435" cy="606" r="5" fill="var(--trace-gnd)" />
+            <circle cx="625" cy="606" r="5" fill="var(--trace-gnd)" />
+            <circle cx="855" cy="606" r="5" fill="var(--trace-gnd)" />
+            <circle cx="855" cy="390" r="5" fill="var(--trace-gnd)" />
+
+            <!-- GND Symbol at bottom -->
+            <line x1="530" y1="606" x2="530" y2="620" stroke="var(--trace-gnd)" stroke-width="3"/>
+            <line x1="514" y1="620" x2="546" y2="620" stroke="var(--trace-gnd)" stroke-width="3"/>
+            <line x1="520" y1="627" x2="540" y2="627" stroke="var(--trace-gnd)" stroke-width="2.5"/>
+            <line x1="526" y1="634" x2="534" y2="634" stroke="var(--trace-gnd)" stroke-width="2"/>
+            <text x="556" y="628" fill="#94a6c1" font-family="JetBrains Mono" font-size="11" font-weight="700">
+              COMMON GND RAIL
+            </text>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- 1. MAIN BUTTON CIRCUIT -> XIAO D0 (P0.02)                    -->
+          <!-- ============================================================ -->
+          <g class="net-group" data-net="btn">
+            <!-- Box Backdrop -->
+            <rect x="32" y="64" width="320" height="162" rx="8" fill="rgba(18, 25, 38, 0.72)" stroke="#2c3e5a" stroke-dasharray="4 4"/>
+            <text x="46" y="84" fill="var(--trace-btn)" font-family="Chakra Petch" font-size="13" font-weight="700">
+              1. MAIN BUTTON CIRCUIT (ACTIVE HIGH)
+            </text>
+
+            <!-- Trace from Switch / Pull-down junction (110, 152) to XIAO D0 (470, 170) -->
+            <path id="trace-d0" class="net-trace" stroke="var(--trace-btn)" stroke-width="3.5"
+              d="M 110 152 L 385 152 L 385 170 L 470 170" />
+            <path id="flow-d0" class="net-flow" stroke="#fff3c4" stroke-width="2" style="opacity: 0;"
+              d="M 110 152 L 385 152 L 385 170 L 470 170" />
+            <circle cx="110" cy="152" r="5" fill="var(--trace-btn)" />
+
+            <!-- Tactile Pushbutton SW1 (between 3V3 at y=95 and node at y=152) -->
+            <g class="interactive-part" onclick="toggleMainButtonClick()" title="Click to toggle Main Button">
+              <rect class="part-box" x="72" y="96" width="76" height="44" rx="5" fill="#151e2e" stroke="var(--trace-btn)" stroke-width="1.8"/>
+              <circle cx="110" cy="104" r="3.5" fill="var(--trace-3v3)"/>
+              <circle cx="110" cy="132" r="3.5" fill="var(--trace-btn)"/>
+              <!-- Switch Lever Blade -->
+              <line id="sw-main-blade" x1="110" y1="132" x2="128" y2="106" stroke="#ffd175" stroke-width="3" stroke-linecap="round"/>
+              <!-- Push Plunger -->
+              <line id="sw-main-plunger" x1="118" y1="118" x2="138" y2="118" stroke="#94a6c1" stroke-width="2"/>
+              <rect id="sw-main-cap" x="138" y="110" width="6" height="16" rx="2" fill="var(--trace-btn)"/>
+              <text x="158" y="114" fill="#e8eef7" font-family="JetBrains Mono" font-size="11" font-weight="700">SW1 (MAIN BTN)</text>
+              <text id="sw-main-state-lbl" x="158" y="129" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">OPEN (Idle = 0V)</text>
+            </g>
+
+            <!-- Pull-down Resistor R2 (10kΩ - 100kΩ) between node (110, 152) and GND (110, 218) -->
+            <line x1="110" y1="152" x2="110" y2="168" stroke="var(--trace-btn)" stroke-width="3"/>
+            <rect x="98" y="168" width="24" height="38" rx="3" fill="#182234" stroke="#94a6c1" stroke-width="2"/>
+            <!-- Resistor color bands -->
+            <line x1="100" y1="176" x2="120" y2="176" stroke="#a16207" stroke-width="2.5"/>
+            <line x1="100" y1="184" x2="120" y2="184" stroke="#000000" stroke-width="2.5"/>
+            <line x1="100" y1="192" x2="120" y2="192" stroke="#f97316" stroke-width="2.5"/>
+            <line x1="110" y1="206" x2="110" y2="218" stroke="var(--trace-gnd)" stroke-width="3"/>
+
+            <text x="132" y="184" fill="#e8eef7" font-family="JetBrains Mono" font-size="11" font-weight="700">R2 = 10 kΩ – 100 kΩ</text>
+            <text x="132" y="198" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">External Pull-Down (Required!)</text>
+            <text x="132" y="212" fill="#fbbf24" font-family="JetBrains Mono" font-size="9.5">Press: HIGH (3.3V) → SENSE_HIGH</text>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- 2. REED SWITCH CIRCUIT -> XIAO D1 (P0.03)                    -->
+          <!-- ============================================================ -->
+          <g class="net-group" data-net="reed">
+            <!-- Box Backdrop -->
+            <rect x="32" y="240" width="388" height="190" rx="8" fill="rgba(18, 25, 38, 0.72)" stroke="#1b4d3e" stroke-dasharray="4 4"/>
+            <text id="reed-box-title" x="46" y="262" fill="var(--trace-reed)" font-family="Chakra Petch" font-size="13" font-weight="700">
+              2. GAS METER REED SENSOR (BARE REED + 10 kΩ PULL-UP)
+            </text>
+
+            <!-- Pull-up Resistor R1 (10kΩ) from 3V3 (275, 235) to Signal Node (275, 315) -->
+            <line x1="275" y1="235" x2="275" y2="256" stroke="var(--trace-3v3)" stroke-width="3"/>
+            <rect id="r1-body" x="263" y="256" width="24" height="42" rx="3" fill="#182234" stroke="var(--trace-reed)" stroke-width="2"/>
+            <line x1="265" y1="266" x2="285" y2="266" stroke="#a16207" stroke-width="2.5"/>
+            <line x1="265" y1="275" x2="285" y2="275" stroke="#000000" stroke-width="2.5"/>
+            <line x1="265" y1="284" x2="285" y2="284" stroke="#f97316" stroke-width="2.5"/>
+            <line x1="275" y1="298" x2="275" y2="315" stroke="var(--trace-reed)" stroke-width="3.5"/>
+
+            <text id="r1-label-1" x="296" y="274" fill="#e8eef7" font-family="JetBrains Mono" font-size="11" font-weight="700">R1 = 10 kΩ</text>
+            <text id="r1-label-2" x="296" y="288" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">Pull-Up to 3V3</text>
+
+            <!-- Trace from Reed Signal Node (205, 315) -> (275, 315) -> XIAO D1 (470, 210) -->
+            <path id="trace-d1" class="net-trace" stroke="var(--trace-reed)" stroke-width="3.5" filter="url(#glow-reed)"
+              d="M 205 335 L 205 315 L 410 315 L 410 210 L 470 210" />
+            <path id="flow-d1" class="net-flow" stroke="#a7f3d0" stroke-width="2"
+              d="M 275 315 L 410 315 L 410 210 L 470 210" />
+            <circle cx="275" cy="315" r="5" fill="var(--trace-reed)" />
+
+            <!-- Optional KY-021 Module PCB Outline (hidden by default in bare mode) -->
+            <rect id="ky021-outline" x="150" y="248" width="255" height="168" rx="6"
+              fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="6 3" style="opacity: 0;" />
+            <text id="ky021-badge" x="160" y="265" fill="#38bdf8" font-family="JetBrains Mono" font-size="10" font-weight="700" style="opacity: 0;">
+              KY-021 PCB (VCC=3V3, GND=GND, S=D1)
+            </text>
+
+            <!-- Glass Reed Switch Capsule (between 205, 335 and GND at 205, 425) -->
+            <g class="interactive-part" onclick="toggleReedClick()" title="Click to toggle Reed Switch (Magnet Pass)">
+              <!-- Glass envelope -->
+              <rect class="part-box" x="183" y="340" width="44" height="72" rx="22" fill="rgba(0, 229, 163, 0.08)" stroke="var(--trace-reed)" stroke-width="2"/>
+              <circle cx="205" cy="354" r="3.5" fill="var(--trace-reed)"/>
+              <circle cx="205" cy="396" r="3.5" fill="var(--trace-gnd)"/>
+              <!-- Reed blades -->
+              <line id="reed-blade-top" x1="205" y1="354" x2="213" y2="378" stroke="#5ffad0" stroke-width="2.8" stroke-linecap="round"/>
+              <line id="reed-blade-bot" x1="205" y1="396" x2="205" y2="374" stroke="#94a6c1" stroke-width="2.8" stroke-linecap="round"/>
+
+              <!-- Magnet Icon next to Reed Switch -->
+              <g id="magnet-icon" transform="translate(88, 352)">
+                <path d="M 0 0 L 26 0 L 26 12 L 12 12 L 12 24 L 26 24 L 26 36 L 0 36 Z" fill="#ef4444" stroke="#fca5a5" stroke-width="1.2"/>
+                <rect x="18" y="0" width="12" height="12" fill="#e2e8f0"/>
+                <rect x="18" y="24" width="12" height="12" fill="#e2e8f0"/>
+                <text x="-38" y="15" fill="#e8eef7" font-family="JetBrains Mono" font-size="10.5" font-weight="700">GAS METER</text>
+                <text x="-38" y="28" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">MAGNET</text>
+              </g>
+
+              <text x="238" y="358" fill="#e8eef7" font-family="JetBrains Mono" font-size="11" font-weight="700">REED SWITCH</text>
+              <text id="reed-state-lbl" x="238" y="373" fill="var(--trace-reed)" font-family="JetBrains Mono" font-size="10.5" font-weight="600">
+                OPEN → D1 = HIGH (1)
+              </text>
+              <text x="238" y="389" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">
+                Close: HIGH→LOW Edge
+              </text>
+              <text x="238" y="403" fill="#34d399" font-family="JetBrains Mono" font-size="9.5">
+                Counts Pulse (+0.01 m³)
+              </text>
+            </g>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- 3. SWITCHED BATTERY ADC DIVIDER -> D2 (AIN4) & D3 (EN)       -->
+          <!-- ============================================================ -->
+          <g class="net-group" data-net="adc">
+            <rect x="32" y="444" width="422" height="148" rx="8" fill="rgba(18, 25, 38, 0.72)" stroke="#3b2d54" stroke-dasharray="4 4"/>
+            <text x="46" y="465" fill="var(--trace-adc)" font-family="Chakra Petch" font-size="13" font-weight="700">
+              3. BATTERY VOLTAGE DIVIDER (D2/AIN4 + D3 FET ENABLE)
+            </text>
+
+            <!-- VBAT+ input to R3 (100kΩ) -->
+            <text x="52" y="492" fill="var(--trace-vbat)" font-family="JetBrains Mono" font-size="11" font-weight="700">VBAT+ (3.0–4.2V)</text>
+            <path class="net-trace" stroke="var(--trace-vbat)" stroke-width="3" d="M 162 488 L 195 488"/>
+
+            <!-- R3 = 100 kΩ (Top resistor) -->
+            <rect x="195" y="476" width="46" height="24" rx="3" fill="#182234" stroke="var(--trace-vbat)" stroke-width="1.8"/>
+            <text x="201" y="492" fill="#e8eef7" font-family="JetBrains Mono" font-size="10.5" font-weight="700">100kΩ</text>
+
+            <!-- Midpoint Node (262, 488) -> D2 / P0.28 (470, 250) -->
+            <path id="trace-d2" class="net-trace" stroke="var(--trace-adc)" stroke-width="3.5"
+              d="M 241 488 L 435 488 L 435 250 L 470 250" />
+            <circle cx="268" cy="488" r="5" fill="var(--trace-adc)" />
+
+            <!-- R4 = 380 kΩ (Bottom resistor from 268, 488 to 332, 488) -->
+            <rect x="282" y="476" width="48" height="24" rx="3" fill="#182234" stroke="var(--trace-adc)" stroke-width="1.8"/>
+            <text x="288" y="492" fill="#e8eef7" font-family="JetBrains Mono" font-size="10.5" font-weight="700">380kΩ</text>
+            <line x1="330" y1="488" x2="355" y2="488" stroke="var(--trace-adc)" stroke-width="3"/>
+            <line x1="355" y1="488" x2="355" y2="512" stroke="var(--trace-adc)" stroke-width="3"/>
+
+            <!-- N-MOSFET Q1 (Drain at 355,512; Source at 355,555 to GND; Gate at 382,532) -->
+            <rect id="q1-box" x="336" y="512" width="42" height="42" rx="5" fill="#151e2e" stroke="var(--trace-div-en)" stroke-width="1.8"/>
+            <text x="344" y="537" fill="#93e2fe" font-family="JetBrains Mono" font-size="11" font-weight="700">FET</text>
+
+            <!-- D3 / P0.29 (470, 290) -> Gate of Q1 (378, 532) & Gate Pull-down R5 (100kΩ to GND) -->
+            <path id="trace-d3" class="net-trace" stroke="var(--trace-div-en)" stroke-width="3"
+              d="M 470 290 L 452 290 L 452 532 L 378 532" />
+            <circle cx="435" cy="532" r="4.5" fill="var(--trace-div-en)" />
+            <rect x="425" y="538" width="20" height="17" rx="2" fill="#182234" stroke="#64748b" stroke-width="1.5"/>
+            <text x="385" y="575" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">R_gate 100kΩ</text>
+
+            <text x="52" y="520" fill="#d8b4fe" font-family="JetBrains Mono" font-size="10.5">
+              V_adc = V_bat × 380 / (100 + 380)
+            </text>
+            <text x="52" y="536" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">
+              D3 HIGH for 102 ms every 12h or 1× click
+            </text>
+            <text x="52" y="552" fill="#38bdf8" font-family="JetBrains Mono" font-size="10">
+              Zero divider leakage when D3 = LOW
+            </text>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- CENTER: SEEED STUDIO XIAO nRF52840 BOARD                     -->
+          <!-- ============================================================ -->
+          <g id="xiao-board" transform="translate(470, 82)">
+            <!-- PCB Body -->
+            <rect x="0" y="0" width="260" height="414" rx="16" fill="url(#pcbGrad)" stroke="var(--pcb-border)" stroke-width="3" />
+            <rect x="8" y="8" width="244" height="398" rx="12" fill="none" stroke="rgba(0, 229, 163, 0.18)" stroke-width="1" />
+
+            <!-- USB-C Connector at Top -->
+            <rect x="82" y="-14" width="96" height="36" rx="6" fill="#334155" stroke="#94a6c1" stroke-width="2" />
+            <rect x="96" y="-6" width="68" height="14" rx="4" fill="#0f172a" />
+            <text x="130" y="34" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="10" font-weight="700">
+              USB-C
+            </text>
+
+            <!-- Board Title -->
+            <text x="130" y="56" text-anchor="middle" fill="#e8eef7" font-family="Chakra Petch" font-size="15" font-weight="700">
+              SEEED XIAO nRF52840
+            </text>
+            <text x="130" y="72" text-anchor="middle" fill="#00e5a3" font-family="JetBrains Mono" font-size="10">
+              64 MHz Cortex-M4F + 2MB QSPI
+            </text>
+
+            <!-- Central Metal RF Shield / SoC & QSPI Package -->
+            <rect x="68" y="110" width="124" height="136" rx="8" fill="url(#mcuGrad)" stroke="#475569" stroke-width="2" />
+            <text x="130" y="138" text-anchor="middle" fill="#f8fafc" font-family="JetBrains Mono" font-size="12" font-weight="700">
+              nRF52840-QIAA
+            </text>
+            <text x="130" y="155" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">
+              Slot 0: 916 KB
+            </text>
+            <text x="130" y="170" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">
+              MCUboot: 64 KB
+            </text>
+
+            <!-- Onboard P25Q16H QSPI Chip -->
+            <rect x="82" y="184" width="96" height="48" rx="4" fill="#090d14" stroke="#38bdf8" stroke-width="1.2" />
+            <text x="130" y="204" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono" font-size="10" font-weight="700">
+              P25Q16H QSPI
+            </text>
+            <text x="130" y="220" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="9">
+              OTA Slot 1: 916 KB
+            </text>
+
+            <!-- Onboard RGB Status LEDs (P0.26 Red, P0.30 Green, P0.06 Blue) -->
+            <g transform="translate(74, 258)">
+              <rect x="0" y="0" width="112" height="32" rx="4" fill="#091510" stroke="#1e3a2f"/>
+              <circle id="xiao-led-r" cx="22" cy="16" r="5" fill="#451a1a" stroke="#ef4444" stroke-width="1.5"/>
+              <text x="22" y="29" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="7.5">RED</text>
+              <circle id="xiao-led-g" cx="56" cy="16" r="5" fill="#143824" stroke="#22c55e" stroke-width="1.5"/>
+              <text x="56" y="29" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="7.5">GRN</text>
+              <circle id="xiao-led-b" cx="90" cy="16" r="5" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+              <text x="90" y="29" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="7.5">BLU</text>
+            </g>
+
+            <!-- LEFT HEADER PINS (1..7: D0..D6) -->
+            <!-- Pin 1: D0 / P0.02 (y = 88 -> global y = 170) -->
+            <g transform="translate(0, 88)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="var(--trace-btn)" font-family="JetBrains Mono" font-size="11" font-weight="700">D0</text>
+              <text x="40" y="4" fill="#cbd5e1" font-family="JetBrains Mono" font-size="9.5">P0.02</text>
+            </g>
+
+            <!-- Pin 2: D1 / P0.03 (y = 128 -> global y = 210) -->
+            <g transform="translate(0, 128)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="var(--trace-reed)" font-family="JetBrains Mono" font-size="11" font-weight="700">D1</text>
+              <text x="40" y="4" fill="#cbd5e1" font-family="JetBrains Mono" font-size="9.5">P0.03</text>
+            </g>
+
+            <!-- Pin 3: D2 / P0.28 AIN4 (y = 168 -> global y = 250) -->
+            <g transform="translate(0, 168)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="var(--trace-adc)" font-family="JetBrains Mono" font-size="11" font-weight="700">D2</text>
+              <text x="40" y="4" fill="#cbd5e1" font-family="JetBrains Mono" font-size="9.5">AIN4</text>
+            </g>
+
+            <!-- Pin 4: D3 / P0.29 (y = 208 -> global y = 290) -->
+            <g transform="translate(0, 208)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="var(--trace-div-en)" font-family="JetBrains Mono" font-size="11" font-weight="700">D3</text>
+              <text x="40" y="4" fill="#cbd5e1" font-family="JetBrains Mono" font-size="9.5">P0.29</text>
+            </g>
+
+            <!-- Pin 5: D4 / P0.04 (y = 248 -> global y = 330) -->
+            <g transform="translate(0, 248)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="#64748b" font-family="JetBrains Mono" font-size="10.5">D4 (NC)</text>
+            </g>
+
+            <!-- Pin 6: D5 / P0.05 (y = 288 -> global y = 370) -->
+            <g transform="translate(0, 288)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="#64748b" font-family="JetBrains Mono" font-size="10.5">D5 (NC)</text>
+            </g>
+
+            <!-- Pin 7: D6 / P1.11 TX (y = 328 -> global y = 410) -->
+            <g transform="translate(0, 328)">
+              <rect x="-8" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="3" cy="0" r="4" fill="#071a13"/>
+              <text x="20" y="4" fill="var(--trace-uart)" font-family="JetBrains Mono" font-size="11" font-weight="700">D6</text>
+              <text x="40" y="4" fill="#cbd5e1" font-family="JetBrains Mono" font-size="9.5">P1.11 TX</text>
+            </g>
+
+            <!-- RIGHT HEADER PINS (14..8: 5V, GND, 3V3, D10..D7) -->
+            <!-- Pin 14: 5V (y = 88 -> global y = 170) -->
+            <g transform="translate(260, 88)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#ef4444" stroke-width="1.2"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="#f87171" font-family="JetBrains Mono" font-size="10.5" font-weight="700">5V (DO NOT USE)</text>
+            </g>
+
+            <!-- Pin 13: GND (y = 128 -> global y = 210) -->
+            <g transform="translate(260, 128)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="#cbd5e1" font-family="JetBrains Mono" font-size="11" font-weight="700">GND</text>
+            </g>
+
+            <!-- Pin 12: 3V3 (y = 168 -> global y = 250) -->
+            <g transform="translate(260, 168)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="var(--trace-3v3)" font-family="JetBrains Mono" font-size="11" font-weight="700">3V3</text>
+            </g>
+
+            <!-- Pin 11: D10 (y = 208 -> global y = 290) -->
+            <g transform="translate(260, 208)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="#64748b" font-family="JetBrains Mono" font-size="10.5">D10 (NC)</text>
+            </g>
+
+            <!-- Pin 10: D9 (y = 248 -> global y = 330) -->
+            <g transform="translate(260, 248)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="#64748b" font-family="JetBrains Mono" font-size="10.5">D9 (NC)</text>
+            </g>
+
+            <!-- Pin 9: D8 (y = 288 -> global y = 370) -->
+            <g transform="translate(260, 288)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="#64748b" font-family="JetBrains Mono" font-size="10.5">D8 (NC)</text>
+            </g>
+
+            <!-- Pin 8: D7 / P1.12 RX (y = 328 -> global y = 410) -->
+            <g transform="translate(260, 328)">
+              <rect x="-14" y="-9" width="22" height="18" rx="4" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.5"/>
+              <circle cx="-3" cy="0" r="4" fill="#071a13"/>
+              <text x="-22" y="4" text-anchor="end" fill="var(--trace-uart)" font-family="JetBrains Mono" font-size="11" font-weight="700">P1.12 RX D7</text>
+            </g>
+
+            <!-- BACKSIDE SURFACE PADS (BAT+/BAT- and SWDIO/SWCLK) -->
+            <g transform="translate(26, 356)">
+              <rect x="0" y="0" width="208" height="44" rx="6" fill="#071510" stroke="#1e3f32" stroke-dasharray="3 2"/>
+              <text x="104" y="13" text-anchor="middle" fill="#94a6c1" font-family="JetBrains Mono" font-size="8.5">
+                BOTTOM PADS (BAT+ / BAT- / SWD)
+              </text>
+              <!-- BAT+ Pad (x = 46 -> global 542, y = 413 -> global 495) -->
+              <circle cx="46" cy="30" r="7" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.2"/>
+              <text x="46" y="33" text-anchor="middle" fill="#000" font-family="JetBrains Mono" font-size="7.5" font-weight="700">B+</text>
+              <!-- BAT- Pad (x = 129 -> global 625, y = 413 -> global 495) -->
+              <circle cx="129" cy="30" r="7" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.2"/>
+              <text x="129" y="33" text-anchor="middle" fill="#000" font-family="JetBrains Mono" font-size="7.5" font-weight="700">B-</text>
+              <!-- SWD Pad -->
+              <circle cx="176" cy="30" r="7" fill="var(--pad-gold)" stroke="var(--pad-gold-stroke)" stroke-width="1.2"/>
+              <text x="176" y="33" text-anchor="middle" fill="#000" font-family="JetBrains Mono" font-size="6.5" font-weight="700">SWD</text>
+            </g>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- 4. RIGHT SIDE: PICO 2 DEBUG PROBE (SWD + UART)               -->
+          <!-- ============================================================ -->
+          <g class="net-group" data-net="uart">
+            <rect x="880" y="256" width="214" height="175" rx="8" fill="rgba(18, 25, 38, 0.85)" stroke="#5b2849" stroke-width="1.8"/>
+            <text x="894" y="278" fill="var(--trace-uart)" font-family="Chakra Petch" font-size="13" font-weight="700">
+              4. PICO 2 DEBUG PROBE
+            </text>
+            <text x="894" y="294" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">
+              CMSIS-DAP: 67FCFD549A37182F
+            </text>
+
+            <!-- UART TX from XIAO D6 (470, 410) routed under XIAO to Probe RX (880, 322) -->
+            <path class="net-trace" stroke="var(--trace-uart)" stroke-width="2.5" stroke-dasharray="6 3"
+              d="M 470 410 L 456 410 L 456 516 L 785 516 L 785 322 L 880 322" />
+            <!-- UART RX to XIAO D7 (730, 410) from Probe TX (880, 346) -->
+            <path class="net-trace" stroke="var(--trace-uart)" stroke-width="2.5" stroke-dasharray="6 3"
+              d="M 730 410 L 805 410 L 805 346 L 880 346" />
+            <!-- SWD (SWDIO / SWCLK) from XIAO bottom pad (672, 468) to Probe SWD (880, 368) -->
+            <path class="net-trace" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="3 3"
+              d="M 679 468 L 822 468 L 822 368 L 880 368" />
+
+            <text x="894" y="326" fill="#f472b6" font-family="JetBrains Mono" font-size="10.5" font-weight="600">UART RX ← D6 (P1.11)</text>
+            <text x="894" y="350" fill="#f472b6" font-family="JetBrains Mono" font-size="10.5" font-weight="600">UART TX → D7 (P1.12)</text>
+            <text x="894" y="372" fill="#38bdf8" font-family="JetBrains Mono" font-size="10.5" font-weight="600">SWDIO/SWCLK (1 MHz)</text>
+            <text x="894" y="394" fill="#94a6c1" font-family="JetBrains Mono" font-size="10.5" font-weight="600">GND ↔ Common GND</text>
+            <text x="894" y="418" fill="#64748b" font-family="JetBrains Mono" font-size="9.5">/dev/cu.usbmodem11102</text>
+          </g>
+
+          <!-- ============================================================ -->
+          <!-- 5. RIGHT BOTTOM: DUAL 18650 PARALLEL BATTERY PACK            -->
+          <!-- ============================================================ -->
+          <g class="net-group" data-net="vbat">
+            <rect x="880" y="454" width="214" height="128" rx="8" fill="rgba(18, 25, 38, 0.85)" stroke="#682738" stroke-width="1.8"/>
+            <text x="894" y="476" fill="var(--trace-vbat)" font-family="Chakra Petch" font-size="13" font-weight="700">
+              5. DUAL 18650 PACK (2P)
+            </text>
+            <text x="894" y="493" fill="#e8eef7" font-family="JetBrains Mono" font-size="10.5" font-weight="600">
+              2 × 3400 mAh = 6800 mAh
+            </text>
+            <text x="894" y="510" fill="#94a6c1" font-family="JetBrains Mono" font-size="9.5">
+              Hot-swappable parallel cells
+            </text>
+            <text x="894" y="528" fill="var(--trace-vbat)" font-family="JetBrains Mono" font-size="10">
+              VBAT+ → XIAO BAT+ &amp; R3
+            </text>
+            <text x="894" y="544" fill="#94a6c1" font-family="JetBrains Mono" font-size="10">
+              VBAT- → Common GND
+            </text>
+
+            <!-- VBAT+ Trace from 18650 Pack (880, 535) to XIAO BAT+ Pad (542, 468) -->
+            <path class="net-trace" stroke="var(--trace-vbat)" stroke-width="3"
+              d="M 880 535 L 542 535 L 542 475" />
+            <!-- Connection from Dual 18650 Negative to GND Rail (960, 582 -> 960, 606) -->
+            <line x1="960" y1="582" x2="960" y2="606" stroke="var(--trace-gnd)" stroke-width="3.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Embedded HTML5 Canvas Logic Analyzer -->
+      <div class="scope-section">
+        <div class="scope-header">
+          <span>REAL-TIME GPIO LOGIC ANALYZER (CANVAS TIMING TRACE)</span>
+          <span id="scope-event-log" style="color: #00e5a3;">Ready — Click or hold Reed Switch / Main Button above to observe transitions</span>
+        </div>
+        <canvas id="logic-canvas" width="960" height="155"></canvas>
+      </div>
+    </section>
+
+    <!-- Right Column: Telemetry, Net Selector & Resistor Guide -->
+    <aside class="sidebar">
+
+      <!-- Live Simulated State Card -->
+      <div class="side-card">
+        <h2>
+          <span>LIVE GPIO &amp; COUNTER STATE</span>
+          <span style="font-family: 'JetBrains Mono'; font-size: 10px; color: #00e5a3;">INTERACTIVE</span>
+        </h2>
+        <div class="telemetry-grid">
+          <div class="telemetry-box">
+            <div class="telemetry-label">REED PIN (D1 / P0.03)</div>
+            <div class="telemetry-val" id="tel-reed" style="color: var(--trace-reed);">1 (3.30 V)</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">MAIN BTN (D0 / P0.02)</div>
+            <div class="telemetry-val" id="tel-btn" style="color: var(--text-secondary);">0 (0.00 V)</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">PULSE COUNT (RAW)</div>
+            <div class="telemetry-val" id="tel-count" style="color: #f8fafc;">0 pulses</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">BATT ADC (D2 / AIN4)</div>
+            <div class="telemetry-val" id="tel-adc" style="color: var(--trace-adc);">3.17 V / 4.00 V</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color-Coded Nets Filter -->
+      <div class="side-card">
+        <h2>
+          <span>COLOR-CODED TRACE LEGEND</span>
+          <span style="font-family: 'JetBrains Mono'; font-size: 10px; color: var(--text-muted);">HOVER TO ISOLATE</span>
+        </h2>
+        <div class="net-list">
+          <div class="net-item" onmouseenter="highlightNet('reed')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-reed);"></span>
+              <span>Reed Pulse Input</span>
+            </div>
+            <span class="net-pin-tag">D1 / P0.03</span>
+          </div>
+          <div class="net-item" onmouseenter="highlightNet('btn')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-btn);"></span>
+              <span>Main Button Input</span>
+            </div>
+            <span class="net-pin-tag">D0 / P0.02</span>
+          </div>
+          <div class="net-item" onmouseenter="highlightNet('3v3')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-3v3);"></span>
+              <span>+3.3V Regulated Rail</span>
+            </div>
+            <span class="net-pin-tag">Pin 12 (3V3)</span>
+          </div>
+          <div class="net-item" onmouseenter="highlightNet('gnd')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-gnd);"></span>
+              <span>Common Ground Rail</span>
+            </div>
+            <span class="net-pin-tag">Pin 13 (GND)</span>
+          </div>
+          <div class="net-item" onmouseenter="highlightNet('adc')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-adc);"></span>
+              <span>Battery ADC &amp; FET En</span>
+            </div>
+            <span class="net-pin-tag">D2 / D3</span>
+          </div>
+          <div class="net-item" onmouseenter="highlightNet('uart')" onmouseleave="highlightNet(null)">
+            <div class="net-swatch-group">
+              <span class="net-swatch" style="background: var(--trace-uart);"></span>
+              <span>Debug UART &amp; SWD</span>
+            </div>
+            <span class="net-pin-tag">D6 / D7 / SWD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resistor & Polarity Reference -->
+      <div class="side-card">
+        <h2>EXTERNAL RESISTORS &amp; RULES</h2>
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Value</th>
+              <th>Why It Is Needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>R1</strong> (D1)</td>
+              <td><strong>10 kΩ</strong><br/>to 3V3</td>
+              <td>Pull-up for bare reed switch. Holds D1 at <strong>3.3V (1)</strong> when open; reed pulls D1 to <strong>0V (0)</strong> when magnet passes. <em>(Included onboard if using KY-021 module.)</em></td>
+            </tr>
+            <tr>
+              <td><strong>R2</strong> (D0)</td>
+              <td><strong>10–100 kΩ</strong><br/>to GND</td>
+              <td>Pull-down for main button. Holds D0 at <strong>0V (0)</strong> when idle; button pulls D0 to <strong>3.3V (1)</strong> when pressed.</td>
+            </tr>
+            <tr>
+              <td><strong>R3 / R4</strong></td>
+              <td><strong>100 kΩ</strong> /<br/><strong>380 kΩ</strong></td>
+              <td>Scales 4.2V battery to 3.32V at D2 (AIN4), switched by D3 (P0.29) FET so divider draws 0 µA in sleep.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="warn-banner">
+          <strong>CRITICAL:</strong> Neither D0 (`P0.02`) nor D1 (`P0.03`) enables internal nRF52840 pull resistors in devicetree. Never leave D0 or D1 floating, and never connect 5V to any GPIO pin.
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+<script>
+  const state = {
+    reedMode: 'bare', // 'bare' | 'ky021'
+    reedClosed: false,
+    mainBtnPressed: false,
+    adcActive: false,
+    pulseCount: 0,
+    lastReedChangeMs: 0,
+    history: []
+  };
+
+  // Initialize history buffer for the 4-channel canvas logic analyzer
+  const MAX_SAMPLES = 240;
+  for (let i = 0; i < MAX_SAMPLES; i++) {
+    state.history.push({
+      d1: 1, // Reed input idle HIGH (3.3V)
+      d0: 0, // Main button idle LOW (0.0V)
+      d3: 0, // Battery divider enable idle LOW
+      irq: 0 // Pulse counted marker
+    });
+  }
+
+  let pendingIrqPulse = 0;
+
+  function setReedMode(mode) {
+    state.reedMode = mode;
+    document.getElementById('mode-bare').classList.toggle('selected', mode === 'bare');
+    document.getElementById('mode-ky021').classList.toggle('selected', mode === 'ky021');
+
+    const kyOutline = document.getElementById('ky021-outline');
+    const kyBadge = document.getElementById('ky021-badge');
+    const title = document.getElementById('reed-box-title');
+    const r1Label2 = document.getElementById('r1-label-2');
+
+    if (mode === 'ky021') {
+      kyOutline.style.opacity = '1';
+      kyBadge.style.opacity = '1';
+      title.textContent = '2. GAS METER REED SENSOR (KY-021 3-PIN MODULE @ 3.3V)';
+      r1Label2.textContent = 'Onboard KY-021 10kΩ';
+    } else {
+      kyOutline.style.opacity = '0';
+      kyBadge.style.opacity = '0';
+      title.textContent = '2. GAS METER REED SENSOR (BARE REED + 10 kΩ PULL-UP)';
+      r1Label2.textContent = 'External Pull-Up to 3V3';
+    }
+  }
+
+  function setReedClosed(closed) {
+    const prev = state.reedClosed;
+    state.reedClosed = closed;
+
+    const btn = document.getElementById('btn-sim-reed');
+    const bladeTop = document.getElementById('reed-blade-top');
+    const magnet = document.getElementById('magnet-icon');
+    const lbl = document.getElementById('reed-state-lbl');
+    const traceD1 = document.getElementById('trace-d1');
+    const flowD1 = document.getElementById('flow-d1');
+    const telReed = document.getElementById('tel-reed');
+    const telCount = document.getElementById('tel-count');
+    const pillDot = document.getElementById('pill-d1-dot');
+    const pillText = document.getElementById('pill-d1-text');
+    const scopeLog = document.getElementById('scope-event-log');
+    const greenLed = document.getElementById('xiao-led-g');
+
+    btn.classList.toggle('active', closed);
+
+    if (closed) {
+      // Close reed blades & move magnet closer
+      bladeTop.setAttribute('x2', '205');
+      bladeTop.setAttribute('y2', '376');
+      magnet.setAttribute('transform', 'translate(132, 352)');
+      lbl.textContent = 'CLOSED → D1 = LOW (0V)';
+      lbl.setAttribute('fill', '#38bdf8');
+      traceD1.setAttribute('stroke', '#38bdf8');
+      flowD1.style.opacity = '0';
+      telReed.textContent = '0 (0.00 V)';
+      telReed.style.color = '#38bdf8';
+      pillDot.style.background = '#38bdf8';
+      pillText.textContent = 'D1 (P0.03): LOW (0.0V)';
+      greenLed.setAttribute('fill', '#22c55e');
+
+      // Falling edge HIGH -> LOW triggers GPIO_INT_EDGE_TO_INACTIVE (with 100ms debounce)
+      if (!prev) {
+        const now = performance.now();
+        if (now - state.lastReedChangeMs > 100) {
+          state.lastReedChangeMs = now;
+          state.pulseCount += 1;
+          pendingIrqPulse = 1;
+          telCount.textContent = `${state.pulseCount} (${(state.pulseCount * 0.01).toFixed(2)} m³)`;
+          scopeLog.textContent = `FALLING EDGE (HIGH → LOW) on P0.03: GPIO_INT_EDGE_TO_INACTIVE → Counter = ${state.pulseCount}`;
+        }
+      }
+    } else {
+      bladeTop.setAttribute('x2', '213');
+      bladeTop.setAttribute('y2', '378');
+      magnet.setAttribute('transform', 'translate(88, 352)');
+      lbl.textContent = 'OPEN → D1 = HIGH (1)';
+      lbl.setAttribute('fill', 'var(--trace-reed)');
+      traceD1.setAttribute('stroke', 'var(--trace-reed)');
+      flowD1.style.opacity = '1';
+      telReed.textContent = '1 (3.30 V)';
+      telReed.style.color = 'var(--trace-reed)';
+      pillDot.style.background = 'var(--trace-reed)';
+      pillText.textContent = 'D1 (P0.03): HIGH (3.3V)';
+      greenLed.setAttribute('fill', '#143824');
+    }
+  }
+
+  function toggleReedClick() {
+    setReedClosed(true);
+    setTimeout(() => setReedClosed(false), 320);
+  }
+
+  function setMainButtonPressed(pressed) {
+    state.mainBtnPressed = pressed;
+    const btn = document.getElementById('btn-sim-main');
+    const blade = document.getElementById('sw-main-blade');
+    const lbl = document.getElementById('sw-main-state-lbl');
+    const flowD0 = document.getElementById('flow-d0');
+    const traceD0 = document.getElementById('trace-d0');
+    const telBtn = document.getElementById('tel-btn');
+    const pillDot = document.getElementById('pill-d0-dot');
+    const pillText = document.getElementById('pill-d0-text');
+    const scopeLog = document.getElementById('scope-event-log');
+    const redLed = document.getElementById('xiao-led-r');
+
+    btn.classList.toggle('active', pressed);
+
+    if (pressed) {
+      blade.setAttribute('x2', '110');
+      blade.setAttribute('y2', '104');
+      lbl.textContent = 'CLOSED (Active = 3.3V)';
+      lbl.setAttribute('fill', 'var(--trace-btn)');
+      flowD0.style.opacity = '1';
+      traceD0.setAttribute('filter', 'url(#glow-btn)');
+      telBtn.textContent = '1 (3.30 V)';
+      telBtn.style.color = 'var(--trace-btn)';
+      pillDot.style.background = 'var(--trace-btn)';
+      pillText.textContent = 'D0 (P0.02): HIGH (3.3V)';
+      redLed.setAttribute('fill', '#ef4444');
+      scopeLog.textContent = 'RISING EDGE (LOW → HIGH) on P0.02: Main Button Pressed → Wakes Zigbee for 60s';
+    } else {
+      blade.setAttribute('x2', '128');
+      blade.setAttribute('y2', '106');
+      lbl.textContent = 'OPEN (Idle = 0V)';
+      lbl.textContent = 'OPEN (Idle = 0V)';
+      lbl.setAttribute('fill', '#94a6c1');
+      flowD0.style.opacity = '0';
+      traceD0.removeAttribute('filter');
+      telBtn.textContent = '0 (0.00 V)';
+      telBtn.style.color = 'var(--text-secondary)';
+      pillDot.style.background = 'var(--trace-gnd)';
+      pillText.textContent = 'D0 (P0.02): LOW (0.0V)';
+      redLed.setAttribute('fill', '#451a1a');
+    }
+  }
+
+  function toggleMainButtonClick() {
+    setMainButtonPressed(true);
+    setTimeout(() => setMainButtonPressed(false), 280);
+  }
+
+  function triggerAdcSample() {
+    if (state.adcActive) return;
+    state.adcActive = true;
+    const btn = document.getElementById('btn-sim-adc');
+    const pillDot = document.getElementById('pill-d3-dot');
+    const pillText = document.getElementById('pill-d3-text');
+    const q1Box = document.getElementById('q1-box');
+    const scopeLog = document.getElementById('scope-event-log');
+
+    btn.classList.add('active');
+    pillDot.style.background = 'var(--trace-div-en)';
+    pillText.textContent = 'D3 (P0.29): HIGH (SAMPLING)';
+    q1Box.setAttribute('fill', '#0c3b5e');
+    scopeLog.textContent = 'ADC SAMPLE: D3 (P0.29) = HIGH → MOSFET ON → D2 (AIN4) reads 3.17V (Battery = 4.00V)';
+
+    setTimeout(() => {
+      state.adcActive = false;
+      btn.classList.remove('active');
+      pillDot.style.background = 'var(--trace-gnd)';
+      pillText.textContent = 'D3 (P0.29): LOW (OFF)';
+      q1Box.setAttribute('fill', '#151e2e');
+    }, 600);
+  }
+
+  function highlightNet(netName) {
+    const groups = document.querySelectorAll('.net-group');
+    groups.forEach(g => {
+      if (!netName) {
+        g.classList.remove('net-dimmed', 'net-highlighted');
+      } else if (g.dataset.net === netName) {
+        g.classList.remove('net-dimmed');
+        g.classList.add('net-highlighted');
+      } else {
+        g.classList.remove('net-highlighted');
+        g.classList.add('net-dimmed');
+      }
+    });
+  }
+
+  // Canvas Logic Analyzer Rendering Loop
+  const canvas = document.getElementById('logic-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function renderLogicAnalyzer() {
+    state.history.push({
+      d1: state.reedClosed ? 0 : 1,
+      d0: state.mainBtnPressed ? 1 : 0,
+      d3: state.adcActive ? 1 : 0,
+      irq: pendingIrqPulse
+    });
+    pendingIrqPulse = 0;
+    if (state.history.length > MAX_SAMPLES) {
+      state.history.shift();
+    }
+
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Subtle vertical timing grid
+    ctx.strokeStyle = 'rgba(45, 68, 102, 0.22)';
+    ctx.lineWidth = 1;
+    for (let x = 140; x < w; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+
+    const channels = [
+      { key: 'd1', label: 'D1 / P0.03 (REED)', color: '#00e5a3', yHigh: 14, yLow: 40 },
+      { key: 'd0', label: 'D0 / P0.02 (BTN)',  color: '#ffb020', yHigh: 60, yLow: 86 },
+      { key: 'd3', label: 'D3 / P0.29 (ADC)',  color: '#38bdf8', yHigh: 106, yLow: 132 }
+    ];
+
+    const plotStartX = 148;
+    const stepX = (w - plotStartX - 12) / (MAX_SAMPLES - 1);
+
+    channels.forEach(ch => {
+      // Label
+      ctx.fillStyle = ch.color;
+      ctx.font = '600 11px "JetBrains Mono", monospace';
+      ctx.fillText(ch.label, 10, (ch.yHigh + ch.yLow) / 2 + 4);
+
+      // Baseline reference
+      ctx.strokeStyle = 'rgba(148, 166, 193, 0.12)';
+      ctx.beginPath();
+      ctx.moveTo(plotStartX, ch.yLow);
+      ctx.lineTo(w - 12, ch.yLow);
+      ctx.stroke();
+
+      // Digital waveform
+      ctx.strokeStyle = ch.color;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let i = 0; i < state.history.length; i++) {
+        const x = plotStartX + i * stepX;
+        const y = state.history[i][ch.key] ? ch.yHigh : ch.yLow;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          const prevY = state.history[i - 1][ch.key] ? ch.yHigh : ch.yLow;
+          if (prevY !== y) {
+            ctx.lineTo(x, prevY);
+          }
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+    });
+
+    // Draw falling-edge pulse markers on D1
+    for (let i = 0; i < state.history.length; i++) {
+      if (state.history[i].irq) {
+        const x = plotStartX + i * stepX;
+        ctx.fillStyle = '#00e5a3';
+        ctx.beginPath();
+        ctx.arc(x, 40, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#e8eef7';
+        ctx.font = '700 9.5px "JetBrains Mono", monospace';
+        ctx.fillText('PULSE +1', x - 22, 52);
+      }
+    }
+
+    requestAnimationFrame(renderLogicAnalyzer);
+  }
+
+  requestAnimationFrame(renderLogicAnalyzer);
+</script>
+</body>
+</html>
