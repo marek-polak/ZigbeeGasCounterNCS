@@ -1486,7 +1486,7 @@
                 x="82"
                 y="-14"
                 width="96"
-                height="36"
+                height="32"
                 rx="6"
                 fill="#334155"
                 stroke="#94a6c1"
@@ -1496,49 +1496,119 @@
                 x="96"
                 y="-6"
                 width="68"
-                height="14"
+                height="12"
                 rx="4"
                 fill="#0f172a"
               />
               <text
                 x="130"
-                y="34"
+                y="14"
                 text-anchor="middle"
-                fill="#94a6c1"
+                fill="#cbd5e1"
                 font-family="JetBrains Mono"
-                font-size="10"
+                font-size="8.5"
                 font-weight="700"
               >
                 USB-C
               </text>
 
-              <!-- Board Title -->
-              <text
-                x="130"
-                y="56"
-                text-anchor="middle"
-                fill="#e8eef7"
-                font-family="Chakra Petch"
-                font-size="15"
-                font-weight="700"
-              >
-                SEEED XIAO nRF52840
-              </text>
-              <text
-                x="130"
-                y="72"
-                text-anchor="middle"
-                fill="#00e5a3"
-                font-family="JetBrains Mono"
-                font-size="10"
-              >
-                64 MHz Cortex-M4F + 2MB QSPI
-              </text>
+              <!-- 2x2 SWD PADS DIRECTLY UNDER USB-C CONNECTOR (CLK, DIO / GND, RST) -->
+              <g transform="translate(80, 22)">
+                <rect
+                  x="0"
+                  y="0"
+                  width="100"
+                  height="58"
+                  rx="6"
+                  fill="#071510"
+                  stroke="#1e3f32"
+                  stroke-dasharray="3 2"
+                />
+                <!-- Top Row: CLK (left, local x=32 -> global 582, y=36 -> global 118) & DIO (right, local x=68 -> global 618, y=36 -> global 118) -->
+                <circle
+                  cx="32"
+                  cy="14"
+                  r="6.5"
+                  fill="var(--pad-gold)"
+                  stroke="var(--pad-gold-stroke)"
+                  stroke-width="1.4"
+                />
+                <text
+                  x="32"
+                  y="29"
+                  text-anchor="middle"
+                  fill="#38bdf8"
+                  font-family="JetBrains Mono"
+                  font-size="8.5"
+                  font-weight="700"
+                >
+                  CLK
+                </text>
+
+                <circle
+                  cx="68"
+                  cy="14"
+                  r="6.5"
+                  fill="var(--pad-gold)"
+                  stroke="var(--pad-gold-stroke)"
+                  stroke-width="1.4"
+                />
+                <text
+                  x="68"
+                  y="29"
+                  text-anchor="middle"
+                  fill="#22d3ee"
+                  font-family="JetBrains Mono"
+                  font-size="8.5"
+                  font-weight="700"
+                >
+                  DIO
+                </text>
+
+                <!-- Bottom Row: GND (left) & RST (right) -->
+                <circle
+                  cx="32"
+                  cy="40"
+                  r="6"
+                  fill="#9ca3af"
+                  stroke="#cbd5e1"
+                  stroke-width="1"
+                />
+                <text
+                  x="32"
+                  y="54"
+                  text-anchor="middle"
+                  fill="#94a6c1"
+                  font-family="JetBrains Mono"
+                  font-size="8"
+                >
+                  GND
+                </text>
+
+                <circle
+                  cx="68"
+                  cy="40"
+                  r="6"
+                  fill="#9ca3af"
+                  stroke="#cbd5e1"
+                  stroke-width="1"
+                />
+                <text
+                  x="68"
+                  y="54"
+                  text-anchor="middle"
+                  fill="#94a6c1"
+                  font-family="JetBrains Mono"
+                  font-size="8"
+                >
+                  RST
+                </text>
+              </g>
 
               <!-- Central Metal RF Shield / SoC & QSPI Package -->
               <rect
                 x="68"
-                y="110"
+                y="106"
                 width="124"
                 height="136"
                 rx="8"
@@ -1548,32 +1618,42 @@
               />
               <text
                 x="130"
-                y="138"
+                y="132"
                 text-anchor="middle"
                 fill="#f8fafc"
                 font-family="JetBrains Mono"
-                font-size="12"
+                font-size="11.5"
                 font-weight="700"
               >
                 nRF52840-QIAA
               </text>
               <text
                 x="130"
-                y="155"
+                y="148"
+                text-anchor="middle"
+                fill="#00e5a3"
+                font-family="JetBrains Mono"
+                font-size="9"
+              >
+                XIAO nRF52840
+              </text>
+              <text
+                x="130"
+                y="163"
                 text-anchor="middle"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="9"
               >
                 Slot 0: 916 KB
               </text>
               <text
                 x="130"
-                y="170"
+                y="176"
                 text-anchor="middle"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
-                font-size="9.5"
+                font-size="9"
               >
                 MCUboot: 64 KB
               </text>
@@ -2080,87 +2160,72 @@
                 </text>
               </g>
 
-              <!-- BACKSIDE SURFACE PADS (BAT+/BAT- and SWDIO/SWCLK) -->
-              <g transform="translate(26, 356)">
+              <!-- BOTTOM CENTER: BAT (- left, + right) RECTANGULAR PADS -->
+              <g transform="translate(80, 352)">
                 <rect
                   x="0"
                   y="0"
-                  width="208"
-                  height="44"
+                  width="100"
+                  height="50"
                   rx="6"
                   fill="#071510"
                   stroke="#1e3f32"
                   stroke-dasharray="3 2"
                 />
                 <text
-                  x="104"
-                  y="13"
+                  x="50"
+                  y="12"
                   text-anchor="middle"
-                  fill="#94a6c1"
+                  fill="#cbd5e1"
                   font-family="JetBrains Mono"
                   font-size="8.5"
+                  font-weight="700"
                 >
-                  BOTTOM PADS (BAT+ / BAT- / SWD)
+                  BAT PADS
                 </text>
-                <!-- BAT+ Pad (x = 46 -> global 542, y = 413 -> global 495) -->
-                <circle
-                  cx="46"
-                  cy="30"
-                  r="7"
+                <!-- Left Rectangular Pad: BAT - (local x=36 -> global 586, y=378 -> global 460) -->
+                <rect
+                  x="29"
+                  y="16"
+                  width="14"
+                  height="22"
+                  rx="2"
                   fill="var(--pad-gold)"
                   stroke="var(--pad-gold-stroke)"
                   stroke-width="1.2"
                 />
                 <text
-                  x="46"
-                  y="33"
+                  x="36"
+                  y="47"
                   text-anchor="middle"
-                  fill="#000"
+                  fill="#e8eef7"
                   font-family="JetBrains Mono"
-                  font-size="7.5"
+                  font-size="11"
                   font-weight="700"
                 >
-                  B+
+                  −
                 </text>
-                <!-- BAT- Pad (x = 129 -> global 625, y = 413 -> global 495) -->
-                <circle
-                  cx="129"
-                  cy="30"
-                  r="7"
+                <!-- Right Rectangular Pad: BAT + (local x=64 -> global 614, y=378 -> global 460) -->
+                <rect
+                  x="57"
+                  y="16"
+                  width="14"
+                  height="22"
+                  rx="2"
                   fill="var(--pad-gold)"
                   stroke="var(--pad-gold-stroke)"
                   stroke-width="1.2"
                 />
                 <text
-                  x="129"
-                  y="33"
+                  x="64"
+                  y="47"
                   text-anchor="middle"
-                  fill="#000"
+                  fill="var(--trace-vbat)"
                   font-family="JetBrains Mono"
-                  font-size="7.5"
+                  font-size="11"
                   font-weight="700"
                 >
-                  B-
-                </text>
-                <!-- SWD Pad -->
-                <circle
-                  cx="176"
-                  cy="30"
-                  r="7"
-                  fill="var(--pad-gold)"
-                  stroke="var(--pad-gold-stroke)"
-                  stroke-width="1.2"
-                />
-                <text
-                  x="176"
-                  y="33"
-                  text-anchor="middle"
-                  fill="#000"
-                  font-family="JetBrains Mono"
-                  font-size="6.5"
-                  font-weight="700"
-                >
-                  SWD
+                  +
                 </text>
               </g>
             </g>
@@ -2171,9 +2236,9 @@
             <g class="net-group" data-net="uart">
               <rect
                 x="880"
-                y="256"
+                y="242"
                 width="214"
-                height="175"
+                height="196"
                 rx="8"
                 fill="rgba(18, 25, 38, 0.85)"
                 stroke="#5b2849"
@@ -2181,7 +2246,7 @@
               />
               <text
                 x="894"
-                y="278"
+                y="264"
                 fill="var(--trace-uart)"
                 font-family="Chakra Petch"
                 font-size="13"
@@ -2191,7 +2256,7 @@
               </text>
               <text
                 x="894"
-                y="294"
+                y="280"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
                 font-size="9.5"
@@ -2199,34 +2264,63 @@
                 CMSIS-DAP: 67FCFD549A37182F
               </text>
 
-              <!-- UART TX from XIAO D6 (470, 410) routed under XIAO to Probe RX (880, 322) -->
-              <path
-                class="net-trace"
-                stroke="var(--trace-uart)"
-                stroke-width="2.5"
-                stroke-dasharray="6 3"
-                d="M 470 410 L 456 410 L 456 516 L 785 516 L 785 322 L 880 322"
-              />
-              <!-- UART RX to XIAO D7 (730, 410) from Probe TX (880, 346) -->
-              <path
-                class="net-trace"
-                stroke="var(--trace-uart)"
-                stroke-width="2.5"
-                stroke-dasharray="6 3"
-                d="M 730 410 L 805 410 L 805 346 L 880 346"
-              />
-              <!-- SWD (SWDIO / SWCLK) from XIAO bottom pad (672, 468) to Probe SWD (880, 368) -->
+              <!-- SWCLK from top CLK pad under USB-C (582, 118) to Probe SWCLK (880, 304) -->
               <path
                 class="net-trace"
                 stroke="#38bdf8"
+                stroke-width="2.6"
+                stroke-dasharray="5 3"
+                d="M 582 118 L 582 68 L 796 68 L 796 304 L 880 304"
+              />
+              <!-- SWDIO from top DIO pad under USB-C (618, 118) to Probe SWDIO (880, 326) -->
+              <path
+                class="net-trace"
+                stroke="#22d3ee"
+                stroke-width="2.6"
+                stroke-dasharray="5 3"
+                d="M 618 118 L 618 82 L 778 82 L 778 326 L 880 326"
+              />
+
+              <!-- UART TX from XIAO D6 (470, 410) routed under XIAO to Probe RX (880, 348) -->
+              <path
+                class="net-trace"
+                stroke="var(--trace-uart)"
                 stroke-width="2.5"
-                stroke-dasharray="3 3"
-                d="M 679 468 L 822 468 L 822 368 L 880 368"
+                stroke-dasharray="6 3"
+                d="M 470 410 L 456 410 L 456 516 L 764 516 L 764 348 L 880 348"
+              />
+              <!-- UART RX to XIAO D7 (730, 410) from Probe TX (880, 370) -->
+              <path
+                class="net-trace"
+                stroke="var(--trace-uart)"
+                stroke-width="2.5"
+                stroke-dasharray="6 3"
+                d="M 730 410 L 808 410 L 808 370 L 880 370"
               />
 
               <text
                 x="894"
-                y="326"
+                y="308"
+                fill="#38bdf8"
+                font-family="JetBrains Mono"
+                font-size="10.5"
+                font-weight="600"
+              >
+                SWCLK ← Top CLK Pad
+              </text>
+              <text
+                x="894"
+                y="330"
+                fill="#22d3ee"
+                font-family="JetBrains Mono"
+                font-size="10.5"
+                font-weight="600"
+              >
+                SWDIO ↔ Top DIO Pad
+              </text>
+              <text
+                x="894"
+                y="352"
                 fill="#f472b6"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2236,7 +2330,7 @@
               </text>
               <text
                 x="894"
-                y="350"
+                y="374"
                 fill="#f472b6"
                 font-family="JetBrains Mono"
                 font-size="10.5"
@@ -2246,32 +2340,23 @@
               </text>
               <text
                 x="894"
-                y="372"
-                fill="#38bdf8"
+                y="396"
+                fill="var(--trace-3v3)"
                 font-family="JetBrains Mono"
                 font-size="10.5"
                 font-weight="600"
               >
-                SWDIO/SWCLK (1 MHz)
+                3V3 ← Side Pin 12 (3V3)
               </text>
               <text
                 x="894"
-                y="394"
+                y="418"
                 fill="#94a6c1"
                 font-family="JetBrains Mono"
                 font-size="10.5"
                 font-weight="600"
               >
-                GND ↔ Common GND
-              </text>
-              <text
-                x="894"
-                y="418"
-                fill="#64748b"
-                font-family="JetBrains Mono"
-                font-size="9.5"
-              >
-                /dev/cu.usbmodem11102
+                GND ↔ Side Pin 13 (GND)
               </text>
             </g>
 
@@ -2334,15 +2419,15 @@
                 font-family="JetBrains Mono"
                 font-size="10"
               >
-                VBAT- → Common GND
+                VBAT- → XIAO BAT− &amp; GND
               </text>
 
-              <!-- VBAT+ Trace from 18650 Pack (880, 535) to XIAO BAT+ Pad (542, 468) -->
+              <!-- VBAT+ Trace from 18650 Pack (880, 535) to XIAO BAT+ Right Rectangular Pad (614, 472) -->
               <path
                 class="net-trace"
                 stroke="var(--trace-vbat)"
                 stroke-width="3"
-                d="M 880 535 L 542 535 L 542 475"
+                d="M 880 535 L 614 535 L 614 472"
               />
               <!-- Connection from Dual 18650 Negative to GND Rail (960, 582 -> 960, 606) -->
               <line
