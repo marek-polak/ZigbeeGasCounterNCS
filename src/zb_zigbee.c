@@ -297,6 +297,7 @@ void zboss_signal_handler(zb_bufid_t bufid)
             break;
         case ZB_BDB_SIGNAL_DEVICE_FIRST_START:
         case ZB_BDB_SIGNAL_DEVICE_REBOOT:
+            report_event_start();
             if (status == 0) {
                 LOG_INF("Device started up in%s factory-reset mode", zb_bdb_is_factory_new() ? "" : " non");
                 if (zb_bdb_is_factory_new()) {
@@ -307,14 +308,12 @@ void zboss_signal_handler(zb_bufid_t bufid)
                 } else {
                     LOG_INF("Device rebooted");
                 }
-                report_event_start();
                 LOG_INF("Deferred driver initialization successful");
             } else {
 #ifdef FEATURE_DEEP_SLEEP
                 poweroff_mgr_user_window_extend(10000);
 #endif
-                LOG_WRN("Failed with status: %d, retrying", status);
-                zb_schedule_app_alarm((zb_callback_t)bdb_start_top_level_commissioning_cb, ZB_BDB_INITIALIZATION, 1000);
+                LOG_WRN("Reboot/first-start signal status: %d, default handler will rejoin", status);
             }
             break;
         case ZB_BDB_SIGNAL_STEERING:
@@ -328,7 +327,6 @@ void zboss_signal_handler(zb_bufid_t bufid)
                         zb_get_pan_id(), zb_get_current_channel(), zb_get_short_address());
             } else {
                 LOG_ERR("Network steering was not successful (status: %d)", status);
-                zb_schedule_app_alarm((zb_callback_t)bdb_start_top_level_commissioning_cb, ZB_BDB_NETWORK_STEERING, 1000);
             }
             break;
         case ZB_ZDO_SIGNAL_LEAVE_INDICATION:
@@ -348,10 +346,11 @@ void zboss_signal_handler(zb_bufid_t bufid)
             break;
         case ZB_SIGNAL_JOIN_DONE:
             LOG_INF("Zigbee join done");
+            report_event_start();
 #if HAS_XIAO_RGB_LED && IS_ENABLED(CONFIG_DEBUG)
             xiao_led_blue_set(false);
 #endif
-            report_event_post(REPORT_REQUEST_TIMING);
+            report_event_post(REPORT_REQUEST_TIMING | REPORT_CURRENT_SUMMATION_DELIVERED);
 #ifdef FEATURE_DEEP_SLEEP
             poweroff_mgr_user_window_extend(10000);
 #endif

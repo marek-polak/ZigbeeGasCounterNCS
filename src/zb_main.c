@@ -98,7 +98,8 @@ static bool reed_inactive_requires_radio(uint64_t *not_reported)
 
 	*not_reported = current - last;
 
-	if (*not_reported >= COUNTER_REPORT_DIFF) {
+	if (*not_reported >= COUNTER_REPORT_DIFF &&
+	    (*not_reported % COUNTER_REPORT_DIFF) == 0) {
 		LOG_INF("Radio shall be started due to counter rebased max difference current=%lld last=%lld",
 			current, last);
 		return true;
@@ -118,7 +119,7 @@ static void start_radio_and_report(bool main_button)
 
 static void log_radio_not_needed_for_reed_inactive(uint64_t not_reported)
 {
-	int remaining = COUNTER_REPORT_DIFF - not_reported;
+	int remaining = COUNTER_REPORT_DIFF - (int)(not_reported % COUNTER_REPORT_DIFF);
 
 	LOG_INF("Still %d pulses remaining to start radio", remaining);
 }

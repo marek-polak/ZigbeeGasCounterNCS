@@ -14,6 +14,7 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/logging/log.h>
+#include <zigbee/zigbee_app_utils.h>
 
 LOG_MODULE_DECLARE(zigbee, LOG_LEVEL_INF);
 
@@ -884,7 +885,19 @@ void zb_counter_increment(void)
 		}
 #endif
 		k_mutex_unlock(&counter_mutex);
-    report_event_post(REPORT_CURRENT_SUMMATION_DELIVERED);
+    uint64_t current = get_current_summ();
+    uint64_t last = retained_get_last_summation_sent();
+    uint64_t not_reported = current - last;
+    if (ZB_JOINED()) {
+        report_event_post(REPORT_CURRENT_SUMMATION_DELIVERED);
+    } else if (not_reported >= COUNTER_REPORT_DIFF &&
+               (not_reported % COUNTER_REPORT_DIFF) == 0) {
+        if (is_zigbee_started()) {
+            LOG_INF("10 unreported pulses accumulated while unjoined; triggering rejoin");
+            user_input_indicate();
+        }
+        report_event_post(REPORT_CURRENT_SUMMATION_DELIVERED);
+    }
     nvr_schedule_save(NVR_ITEM_COUNTER);
 
 #ifdef FEATURE_MEASURE_FLOW_RATE

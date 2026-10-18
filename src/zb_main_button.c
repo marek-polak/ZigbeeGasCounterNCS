@@ -20,6 +20,7 @@
 LOG_MODULE_REGISTER(btn_main, LOG_LEVEL_INF);
 
 #include <zephyr/logging/log_ctrl.h>
+#include <zigbee/zigbee_app_utils.h>
 
 #include "zb_features.h"
 #include "zb_main_button.h"
@@ -513,6 +514,9 @@ static void btn_task(void *p1, void *p2, void *p3)
       xiao_led_red_set(true);
 #endif
 			main_loop_post(SHALL_ENABLE_ZIGBEE);
+			if (is_zigbee_started() && !ZB_JOINED()) {
+				user_input_indicate();
+			}
 #ifdef FEATURE_DEEP_SLEEP
 			poweroff_mgr_user_window_extend(deep_sleep_eval_time_ms(true, false));
 #endif

@@ -31,6 +31,8 @@ LOG_MODULE_REGISTER(report_event, LOG_LEVEL_INF);
 /* The report event queue */
 K_EVENT_DEFINE(report_events);
 
+static atomic_t report_event_started = ATOMIC_INIT(false);
+
 void report_event_post(uint8_t task)
 {
 	k_event_post(&report_events, task);
@@ -130,5 +132,7 @@ static K_THREAD_DEFINE(report_event_tid, REPORT_EVENT_TASK_STACK_SIZE, report_ev
  */
 void report_event_start(void)
 {
-	k_thread_start(report_event_tid);
+	if (atomic_cas(&report_event_started, false, true)) {
+		k_thread_start(report_event_tid);
+	}
 }

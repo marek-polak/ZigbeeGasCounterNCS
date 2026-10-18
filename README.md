@@ -63,7 +63,9 @@ In a Zigbee network, devices are usually classified as coordinators, routers, or
 
 This project behaves as a low-power end device, but with a very specific operating model: the Zigbee radio is normally kept off to save energy, and it is enabled only when needed.
 
-In normal operation, the device wakes the Zigbee radio every 10 gas meter pulses. This allows the counter to keep accurate local measurements while avoiding the power cost of keeping the radio permanently active.
+In normal operation, the device wakes the Zigbee radio every 10 gas meter pulses (`COUNTER_REPORT_DIFF = 10`). This allows the counter to keep accurate local measurements while avoiding the power cost of keeping the radio permanently active.
+
+If the Zigbee coordinator or parent router is temporarily offline or ages out the end device during a long period of inactivity, the device continues counting locally in NVS and automatically resumes network rejoin (`user_input_indicate()`) every 10 accumulated unreported pulses (`10, 20, 30, ...`) or immediately when the main button is pressed, reporting the latest cumulative total as soon as it reconnects (`ZB_SIGNAL_JOIN_DONE`).
 
 The device can also enable the Zigbee radio when the main button is pressed. This is useful before starting an OTA update, writing the counter value, or forcing an immediate report.
 

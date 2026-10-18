@@ -164,12 +164,12 @@ Wire XIAO D6/TX to the debug probe UART RX and connect grounds. Debug logging ma
 
 ## Source architecture
 
-- `src/zb_main.c`: initialization and top-level startup decisions.
+- `src/zb_main.c`: initialization and top-level startup decisions (`reed_inactive_requires_radio()` wakes the radio every `COUNTER_REPORT_DIFF = 10` unreported pulses: `not_reported % COUNTER_REPORT_DIFF == 0`).
 - `src/zb_main_loop.c`: main event loop (`SHALL_ENABLE_ZIGBEE`, `SHALL_MEASURE_BATTERY`, `SHALL_CONFIRM_OTA`; ensure all handled events are included in `main_loop_event_mask()`).
-- `src/zb_main_button.c`: GPIO interrupt and button gesture state machine.
+- `src/zb_main_button.c`: GPIO interrupt and button gesture state machine (calls `user_input_indicate()` on button `PRESS` if `!ZB_JOINED()` to resume Zigbee rejoin after `CONFIG_ZIGBEE_DEV_REJOIN_TIMEOUT_MS` timeout).
 - `src/zb_reed.c`: reed GPIO, debounce/stability checks, and pulse handling (registers GPIO callback before enabling edge interrupt; disables interrupt, removes callback, and persists `next_reed_level` before arming `SYSTEMOFF` wake).
-- `src/zb_zigbee.c`: Zigbee lifecycle, commissioning, callbacks, `ZB_ZCL_SET_ATTR_VALUE_CB_ID` handling, leave/FOTA behavior.
-- `src/zb_zigbee_ctx.c`: endpoint, cluster, attribute, and reporting context declarations. Tracks raw pulse count (`counter_raw`, NVS key `"gm/counter"`) separately from user-configured offset (`curr_summ_delivered_offset`, NVS key `"gm/offset"`), reporting `counter_raw + curr_summ_delivered_offset` as `CurrentSummationDelivered`.
+- `src/zb_zigbee.c`: Zigbee lifecycle, commissioning, callbacks, `ZB_ZCL_SET_ATTR_VALUE_CB_ID` handling, leave/FOTA behavior. Relies on `zigbee_default_signal_handler()` for exponential-backoff network rejoin without competing commissioning alarms, ensures `report_event_start()` is idempotent and called on both reboot and `ZB_SIGNAL_JOIN_DONE`, and posts `REPORT_CURRENT_SUMMATION_DELIVERED` upon `ZB_SIGNAL_JOIN_DONE`.
+- `src/zb_zigbee_ctx.c`: endpoint, cluster, attribute, and reporting context declarations. Tracks raw pulse count (`counter_raw`, NVS key `"gm/counter"`) separately from user-configured offset (`curr_summ_delivered_offset`, NVS key `"gm/offset"`), reporting `counter_raw + curr_summ_delivered_offset` as `CurrentSummationDelivered`. When unjoined (`!ZB_JOINED()`), `zb_counter_increment()` triggers `user_input_indicate()` only every `COUNTER_REPORT_DIFF` (`10`) accumulated pulses (`not_reported % 10 == 0`).
 - `src/zb_radio.c`: radio/report transport behavior.
 - `src/zb_deep_sleep.c`: System OFF policy and poweroff blockers.
 - `src/zb_light_sleep.c`: conventional always-reachable end-device mode.
